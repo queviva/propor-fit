@@ -1,0 +1,220 @@
+<!doctype html><html lang="en">
+<head><title>propor fit</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<style id="bodyStyles">
+
+@font-face {
+    font-family : luckiest;
+    src : url(luckiest.ttf);
+}
+    
+* {
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+body[data-vars] {
+    
+    --nose-h: 120;
+    --nose-s: 40%;
+    --nose-l: 80%;
+    --nose-a: 1;
+    
+    --lightness: hsl( var(--nose-h), var(--nose-s), var(--nose-l));
+    --midness: hsl( var(--nose-h), calc(0.5 * var(--nose-s)), calc(0.5 * var(--nose-l)));
+    --midness-x: hsl( var(--nose-h), calc(0.5 * var(--nose-s)), calc(0.5 * var(--nose-l)),0.5);
+    --darkness: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)));
+    --darkness-x: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)),0.5);
+    --blackness: hsl( var(--nose-h), var(--nose-s), calc(0.16 * var(--nose-l)));
+    --whiteness: hsl( var(--nose-h), var(--nose-s), 90%);
+    --greyness: hsl( var(--nose-h), 0%, 60%);
+    
+    --body-back: #000;
+    --scene-back: #111;
+    --trans-dur: 300ms;
+    
+}
+
+body {
+    
+    padding: 10px;
+    margin: 0;
+    background-color: var(--body-back);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    overscroll-behavior: none;
+    
+}
+
+[data-por] { display: none; }
+
+[data-lan] { display: none; }
+
+@media screen and (orientation: portrait) {
+    [data-por] { display: inline-block; }
+}
+
+@media screen and (orientation: landscape) {
+    [data-lan] { display: inline-block; }
+}
+
+</style>
+<style id="frameStyles">
+
+#frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--greyness);
+    border: 2px solid #900;
+}
+
+#frame > div {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: luckiest;
+    border: 2px solid #090;
+}
+
+</style>
+</head>
+
+<body data-vars>
+    <div id="frame">
+        <!--<div id="intro">intro</div>-->
+        
+        
+<style id="statsStyles">
+
+#stats div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#stats > div {
+    border: 2px solid blue;
+}
+
+#stats > div:nth-of-type(2) > div {
+    border: 2px solid orange;
+}
+
+@media (orientation: landscape) {
+    
+    #stats {
+        flex-direction: row;
+    }
+
+    #stats > div:nth-of-type(1) {
+        width: 80%;
+        height: 100%;
+    }
+
+    #stats > div:nth-of-type(2) {
+        flex-direction: column;
+        width: 20%;
+        height: 100%;
+    }
+
+    #stats > div:nth-of-type(2) > div {
+        height: 50%;
+        width: 100%;
+    }
+
+}
+
+@media (orientation: portrait) {
+    
+    #stats {
+        flex-direction: column;
+    }
+
+    #stats > div:nth-of-type(1) {
+        width: 100%;
+        height: 80%;
+    }
+
+    #stats > div:nth-of-type(2) {
+        flex-direction: row-reverse;
+        width: 100%;
+        height: 20%;
+    }
+
+    #stats > div:nth-of-type(2) > div {
+        height: 100%;
+        width: 50%;
+    }
+
+}
+</style>
+        <div id="stats">
+            <div>line-chart</div>
+            <div>
+                <div>shaper</div>
+                <div>proper</div>
+            </div>
+        </div>
+        
+        
+        
+        
+        
+        <!--<div id="scene">scene</div>-->
+    </div>
+</body>
+
+<script>
+//////////////////////////////////////////////////
+// pizzaFace - MCMLXXXVIII                  /{
+//
+// DEBUGG
+'use strict'
+const log = console.log;
+localStorage.clear();
+//}
+
+new Date() < new Date('2028-10-13') && (() => {
+
+// vars and utils {
+
+const
+appName = 'propFit',
+D = document,
+O = Object,
+A = O.assign,
+J = v => JSON.parse(v||'{}'),
+rand = () => [...crypto.getRandomValues(
+    new Uint32Array(1))
+].map(v => v / 4294967296.5)[0]
+;
+
+//}
+
+// prefs {
+
+const prefs = A({},{
+    guess : 0,
+    stats : {
+        
+    }
+},J(localStorage.appName));
+
+//}
+
+// shape class {
+    
+//}
+
+D.addEventListener('DOMContentLoaded', () => {
+    
+})
+    
+})() === undefined || console.log('exp!red');
+</script>
