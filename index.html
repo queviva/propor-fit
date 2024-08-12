@@ -1,7 +1,7 @@
 <!doctype html><html lang="en">
 <head><title>propr fit</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<!--link rel="icon" type="image/x-icon" href="../favicon.ico"-->
 <style id="bodyStyles">
 
 @font-face {
@@ -96,6 +96,7 @@ body {
     justify-content: center;
     left: 0%;
     background-color: var(--greyness);
+    user-select: none;
     transition: left linear var(--trans-dur);
 }
 
@@ -143,6 +144,7 @@ body {
     justify-content: center;
     background-color: var(--greyness);
     transition: left linear var(--trans-dur);
+    user-select: none;
 }
 
 #stats div {
@@ -230,6 +232,7 @@ body {
     stroke-width: 3px;
     stroke: var(--blackness);
     vector-effect: non-scaling-stroke;
+    transition: all linear var(--trans-dur);
 }
 
 #proporButt {
@@ -251,7 +254,15 @@ body {
     font-size: 100cqmin;
     color: var(--midness);
     -webkit-text-stroke: 3px var(--blackness);
+    opacity: 0;
+    transform: scale(0);
+    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
     border: 2px solid purple;
+}
+
+#proporButt > div.show {
+    opacity: 1;
+    transform: scale(1);
 }
 
 </style>
@@ -262,6 +273,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    user-select: none;
 }
 
 #scene > div, #scene > svg {
@@ -276,9 +288,10 @@ body {
 
 #sceneSVG path {
     vector-effect: non-scaling-stroke;
+    transition: all linear var(--trans-dur);
 }
 
-#sceneProper {
+#scenePropor {
     container-type: size;
     position: relative;
     display: flex;
@@ -288,7 +301,7 @@ body {
     height: 100px;
 }
 
-#sceneProper > div {
+#scenePropor > div {
     position: absolute;
     display: flex;
     align-items: center;
@@ -297,10 +310,23 @@ body {
     width: 100%;
     height: 100%;
     font-family: luckiest;
-    font-size: 100cqh;
+    font-size: 140cqh;
     color: var(--lightness);
     -webkit-text-stroke: 3px var(--midness);
+    opacity: 0;
+    transform: scale(0);
+    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
     border: 2px solid purple;
+}
+
+#scenePropor > div.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#scenePropor > div.fade {
+    opacity: 0;
+    transition: opacity linear calc(10 * var(--trans-dur));
 }
 
 </style>
@@ -309,7 +335,7 @@ body {
 <body data-vars>
     <div id="frame">
         <div id="scene">
-            <div id="sceneProper">
+            <div id="scenePropor">
                 <div>&#189;</div>
                 <div>1</div>
                 <div>2</div>
@@ -319,7 +345,7 @@ body {
              viewBox="-100 -100 200 200"
              xxx-preserveAspectRatio="xMidYMid"
             >
-              <path id="target"
+              <path id="target_path"
                d="M0 -1 1.155 1 -1.155 1Z"
                fill="var(--midness)"
                stroke-width="3"
@@ -333,7 +359,7 @@ body {
               <g id="guess_scale"
                 transform="scale(50)"
               >
-              <path
+              <path id="guess_path"
                d="M0 -1 1.155 1 -1.155 1Z"
                fill="var(--midness-x)"
                stroke-width="3"
@@ -377,7 +403,7 @@ M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
                      viewBox="-2 -2 4 4"
                      preserveAspectRatio="xMidYMid"
                     >
-                     <path d="
+                     <path id="shaper_path" d="
                      M -1 0
                      L -1 0
                      A 1 1  0 0 1  1 0
@@ -459,9 +485,9 @@ W = window,
 A = O.assign,
 J = v => JSON.parse(v||'{}'),
 WAL = (...v) => W.addEventListener(...v),
-rand = () => [...crypto.getRandomValues(
+rand = v => ~~([...crypto.getRandomValues(
     new Uint32Array(1))
-].map(v => v / 4294967296.5)[0]
+].map(v => v / 4294967296.5)[0] * v)
 ;
 
 //}
@@ -469,22 +495,174 @@ rand = () => [...crypto.getRandomValues(
 // prefs {
 
 const prefs = A({},{
+
     guess : 0,
     stats : {
         
-    }
+    },
+    hue : 20
+
 },J(localStorage.appName));
 
 //}
 
 // shape class {
     
+const Triangle = new class {
+
+    #geom = [
+
+    // triangle
+    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L .866 .5 L 0 .5 A 0 0  0 0 1  0 .5 L -.866 .5 Z `,
+
+    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L 1.155 1 L 0 1 A 0 0  0 0 1  0 1 L -1.155 1 Z `,
+
+    //`M 0 -1.5 L 0 -1.5 A 0 0  0 0 1  0 -1.5 L 0 -1.5 L 1.299 .75 L 0 .75 A 0 0  0 0 1  0 .75 L -1.299 .75 Z `,
+
+    `M 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 1.083 .625 L 0 .625 A 0 0  0 0 1  0 .625 L -1.083 .625 Z `,
+
+    // square
+    `M -1 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1 -1 L 1 1 L 0 1 A 0 0  0 0 1  0 1 L -1 1 Z `,
+    
+    // hexaberg
+    `M -.866 -.5 L 0 -1 A 0 0  0 0 1  0 -1 L .866 -.5 L .866 .5 L 0 1 A 0 0  0 0 1  0 1 L -.866 .5 Z `,
+
+    // circle
+    `M -1 0 L -1 0 A 1 1  0 0 1  1 0 L 1 0 L 1 0 L 1 0 A 1 1 0 0 1 -1 0 L -1 0 Z `,
+
+    // rectangle
+    `M -1.414 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1.414 -1 L 1.414 1 L 0 1 A 0 0  0 0 1  0 1 L -1.414 1 Z `
+
+    ];
+
+    #prop = [0, 1, 2, 3];
+
+    #randGeomIdx = 0;
+    #nextGeomIdx = 0;
+
+    #randPropIdx = 0;
+    #nextPropIdx = 0;
+
+    #GEOM = {
+    };
+
+    nextGeo () {
+
+        this.#nextGeomIdx = (this.#nextGeomIdx + 1) % this.#geom.length;
+        return this.#geom[this.#nextGeomIdx];
+
+    }
+
+    randGeo () {
+
+        this.#randGeomIdx = (this.#randGeomIdx + (1 + rand(this.#geom.length - 1))) % this.#geom.length;
+
+        this.#nextGeomIdx = this.#randGeomIdx;
+
+        return this.#geom[this.#randGeomIdx];
+
+    }
+
+    get curGeo () {
+        return this.#geom[this.#nextGeomIdx];
+    }
+
+    nextProp () {
+        this.#nextPropIdx = (this.#nextPropIdx + 1) % this.#prop.length;
+        return this.#prop[this.#nextPropIdx];
+    }
+
+    randProp () {
+
+        this.#randPropIdx = (this.#randPropIdx + (1 + rand(this.#prop.length - 1))) % this.#prop.length;
+
+        this.#nextPropIdx = this.#randPropIdx;
+
+        return this.#prop[this.#randPropIdx];
+    }
+
+    get curProp () {
+        return this.#nextPropIdx;
+    }
+
+                     
+}
+
+
+
 //}
 
 D.addEventListener('DOMContentLoaded', () => {
+
+    Triangle.randGeo();
+
+    [target_path, guess_path, shaper_path].forEach(v =>
+        v.setAttribute('d', Triangle.curGeo)
+    );
+
+    guess_path.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    guess_path.addEventListener('click', () => {
     
-})
+        Triangle.randGeo();
+	[target_path, guess_path, shaper_path].forEach(v => 
+            v.setAttribute('d', Triangle.curGeo)
+        );
+
+        target_path.setAttribute('transform', `
+            translate(${-100 + rand(200)} ${-100 + rand(200)})
+            rotate(${rand(500)})
+            scale(${10 + rand(30)})
+        `);
+
+        guess_path.setAttribute('transform', `rotate(${rand(500)})`);
+
+        D.body.style.setProperty('--nose-h', (prefs.hue += 7));
+
+        Triangle.randProp();
+
+        [...scenePropor.children, ...proporButt.children].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+
+        scenePropor.children[Triangle.curProp].classList.add('show');
+        proporButt.children[Triangle.curProp].classList.add('show');
+
     
+    });
+    
+    shaper_path.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    shaper_path.addEventListener('click', () => {
+        Triangle.nextGeo();
+        [target_path, guess_path, shaper_path].forEach(v => {
+            v.setAttribute('d', Triangle.curGeo);
+        });
+    });
+
+    proporButt.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    proporButt.addEventListener('click', () => {
+
+        Triangle.nextProp();
+
+        [...scenePropor.children, ...proporButt.children].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+
+        scenePropor.children[Triangle.curProp].classList.add('show');
+        proporButt.children[Triangle.curProp].classList.add('show');
+
+    });
+
     // toggle full-screen/chart on double click {
     
     WAL('dblclick', e => {
@@ -493,6 +671,8 @@ D.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         
         nitro.style.left = '100%';
+
+        guess_path.dispatchEvent(new Event('click'));
         
         D.body.requestFullscreen().then((...x)=>{
             
@@ -514,6 +694,709 @@ D.addEventListener('DOMContentLoaded', () => {
     }, { passive: false, once: true });
     
     //}
+    
+})
+    
+})() === undefined || console.log('exp!red');
+</script>
+<!doctype html><html lang="en">
+<head><title>propr fit</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<!--link rel="icon" type="image/x-icon" href="../favicon.ico"-->
+<style id="bodyStyles">
+
+@font-face {
+    font-family : luckiest;
+    src : url(luckiest.ttf);
+}
+    
+* {
+    box-sizing: border-box;
+    word-wrap: break-word;
+}
+
+body[data-vars] {
+    
+    --nose-h: 20;
+    --nose-s: 100%;
+    --nose-l: 90%;
+    --nose-a: 1;
+    
+    --lightness: hsl( var(--nose-h), var(--nose-s), var(--nose-l));
+    --midness: hsl( var(--nose-h), var(--nose-s),
+    calc(0.5 * var(--nose-l))
+    );
+    --midness-x: hsl( var(--nose-h), var(--nose-s), calc(0.5 * var(--nose-l)),0.5);
+    --darkness: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)));
+    --darkness-x: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)),0.5);
+    --blackness: hsl( var(--nose-h), var(--nose-s), calc(0.16 * var(--nose-l)));
+    --whiteness: hsl( var(--nose-h), var(--nose-s), 90%);
+    --greyness: hsl( var(--nose-h), 0%, 60%);
+    
+    --body-back: #000;
+    --scene-back: #111;
+    --trans-dur: 500ms;
+    
+}
+
+body {
+    
+    padding: 10px;
+    margin: 0;
+    background-color: var(--body-back);
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    overscroll-behavior: none;
+    
+}
+
+[data-port] { display: none; }
+
+[data-land] { display: none; }
+
+@media screen and (orientation: portrait) {
+    [data-port] { display: inline-block; }
+}
+
+@media screen and (orientation: landscape) {
+    [data-land] { display: inline-block; }
+}
+
+</style>
+<style id="frameStyles">
+
+#frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: var(--greyness);
+    overflow: hidden;
+    border: 2px solid red;
+}
+
+#frame > div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid green;
+}
+
+#frame .deploy {
+    left: 0%;
+    
+}
+
+</style>
+<style id="nitroStyles">
+
+#nitro {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0%;
+    background-color: var(--greyness);
+    user-select: none;
+    transition: left linear var(--trans-dur);
+}
+
+#nitro > div {
+    position: absolute;
+}
+
+#nitro > div:nth-of-type(1) {
+    
+    display: block;
+    align-items: none;
+    justify-content: none;
+    width: 100%;
+    font-family: luckiest;
+    font-size: 80px;
+    text-align: center;
+    letter-spacing: -.05em;
+    color: var(--lightness);
+    -webkit-text-stroke: 2px var(--darkness);
+    opacity: 0.2;
+    transform: rotate(-20deg);
+    border: 2px solid orange;
+    
+}
+
+#nitro > div:nth-of-type(2) {
+    padding: 20px;
+    width: 100%;
+    hyphens: auto;
+    text-align: center;
+    font-size: 10px;
+    color: var(--blackness);
+    border: 2px solid orange;
+    
+}
+
+
+</style>
+<style id="statsStyles">
+
+#stats {
+    left: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--greyness);
+    transition: left linear var(--trans-dur);
+    user-select: none;
+}
+
+#stats div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#stats > div {
+    border: 2px solid blue;
+}
+
+#stats > div:nth-of-type(2) > div {
+    border: 2px solid orange;
+}
+
+@media (orientation: landscape) {
+    
+    #stats {
+        flex-direction: row;
+    }
+
+    #stats > div:nth-of-type(1) {
+        width: 80%;
+        height: 100%;
+    }
+
+    #stats > div:nth-of-type(2) {
+        flex-direction: column;
+        width: 20%;
+        height: 100%;
+    }
+
+    #stats > div:nth-of-type(2) > div {
+        height: 50%;
+        width: 100%;
+    }
+
+}
+
+@media (orientation: portrait) {
+    
+    #stats {
+        flex-direction: column;
+    }
+
+    #stats > div:nth-of-type(1) {
+        width: 100%;
+        height: 80%;
+    }
+
+    #stats > div:nth-of-type(2) {
+        flex-direction: row-reverse;
+        width: 100%;
+        height: 20%;
+    }
+
+    #stats > div:nth-of-type(2) > div {
+        height: 100%;
+        width: 50%;
+    }
+
+}
+</style>
+<style id="chartStyles">
+
+#chart > path {
+    fill: none;
+    stroke-width: 2px;
+    stroke: var(--lightness);
+    vector-effect: non-scaling-stroke;
+}
+
+</style>
+<style id="buttsStyles">
+
+#shaperButt {
+    height: 100%;
+    width: 100%;
+    border: 2px solid purple;
+}
+
+#shaperButt > path {
+    fill: var(--midness);
+    stroke-width: 3px;
+    stroke: var(--blackness);
+    vector-effect: non-scaling-stroke;
+    transition: all linear var(--trans-dur);
+}
+
+#proporButt {
+    container-type: size;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+#proporButt > div {
+    position: absolute;
+    padding-top: 20cqmax;
+    height: 100%;
+    width: 100%;
+    font-family: luckiest;
+    font-size: 100cqmin;
+    color: var(--midness);
+    -webkit-text-stroke: 3px var(--blackness);
+    opacity: 0;
+    transform: scale(0);
+    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
+    border: 2px solid purple;
+}
+
+#proporButt > div.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+</style>
+<style id="sceneStyles">
+
+#scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+#scene > div, #scene > svg {
+    position: absolute;
+    border: 2px solid orange;
+}
+
+#sceneSVG {
+    height: 100%;
+    width: 100%;
+}
+
+#sceneSVG path {
+    vector-effect: non-scaling-stroke;
+    transition: all linear var(--trans-dur);
+}
+
+#scenePropor {
+    container-type: size;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+}
+
+#scenePropor > div {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30cqh;
+    width: 100%;
+    height: 100%;
+    font-family: luckiest;
+    font-size: 140cqh;
+    color: var(--lightness);
+    -webkit-text-stroke: 3px var(--midness);
+    opacity: 0;
+    transform: scale(0);
+    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
+    border: 2px solid purple;
+}
+
+#scenePropor > div.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#scenePropor > div.fade {
+    opacity: 0;
+    transition: opacity linear calc(10 * var(--trans-dur));
+}
+
+</style>
+</head>
+
+<body data-vars>
+    <div id="frame">
+        <div id="scene">
+            <div id="scenePropor">
+                <div>&#189;</div>
+                <div>1</div>
+                <div>2</div>
+                <div>3</div>
+            </div>
+            <svg id="sceneSVG"
+             viewBox="-100 -100 200 200"
+             xxx-preserveAspectRatio="xMidYMid"
+            >
+              <path id="target_path"
+               d="M0 -1 1.155 1 -1.155 1Z"
+               fill="var(--midness)"
+               stroke-width="3"
+               stroke="var(--blackness)"
+               transform="
+                    translate(-50 -10)
+                    scale(20)
+                    rotate(42)
+               "
+              />
+              <g id="guess_scale"
+                transform="scale(50)"
+              >
+              <path id="guess_path"
+               d="M0 -1 1.155 1 -1.155 1Z"
+               fill="var(--midness-x)"
+               stroke-width="3"
+               stroke="var(--blackness)"
+               transform="rotate(20)"
+               xxx-stroke-linejoin="round"
+               />
+              </g>
+            </svg>
+        </div>
+        <div id="stats">
+            <div>
+                <svg id="chart"
+                 viewBox="0 -50 100 100"
+                 preserveAspectRatio="xMaxYMid"
+                >
+                  <defs>
+                    <marker id="dotmark"
+                     viewBox="-1 -1 2 2"
+                     markerWidth="3"
+                     markerHeight="3"
+                    >
+                        <circle r="1"
+                         fill="var(--midness)"
+                         />
+                    </marker>
+                  </defs>
+                    <path d="
+M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
+                    "
+                     marker-start="url(#dotmark)"
+                     marker-mid="url(#dotmark)"
+                     marker-end="url(#dotmark)"
+                    />
+                </svg>
+                
+            </div>
+            <div>
+                <div>
+                    <svg id="shaperButt"
+                     viewBox="-2 -2 4 4"
+                     preserveAspectRatio="xMidYMid"
+                    >
+                     <path id="shaper_path" d="
+                     M -1 0
+                     L -1 0
+                     A 1 1  0 0 1  1 0
+                     L 1 0
+                     L 1 0
+                     L 1 0
+                     A 1 1 0 0 1 -1 0
+                     L -1 0
+                     Z
+                     " />
+                    </svg>
+                </div>
+                <div id="proporButt">
+                    <div>&#189;</div>
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                </div>
+            </div>
+        </div>
+        <div id="nitro">
+            <div>
+                PROPR
+                <br data-port>
+                <b>&middot;</b>
+                FIT
+                <b data-port>&middot;</b>
+            </div>
+            <div>
+                drag left&#8209;and&#8209;right
+                to resize the middle shape
+                until, in your opinion,
+                it represents the specified
+                proportion of the target shape
+                <br><br>
+                click for the next turn,
+                or just click
+                <i>without resizing</i>
+                to skip that turn
+                <br><br>
+                <br data-port>
+                <div style="
+                    width: 100%;
+                    text-align:center;
+                    font-family: luckiest;
+                    font-size: 2em;
+                    
+                ">
+                    double click to begin
+                    <br>
+                    <span style="font-size:0.4em;">
+                        [also to view stats]
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+//////////////////////////////////////////////////
+// pizzaFace - MCMLXXXVIII                  /{
+//
+// DEBUGG
+'use strict'
+const log = console.log;
+localStorage.clear();
+//}
+
+new Date() < new Date('2028-10-13') && (() => {
+
+// vars and utils {
+
+const
+appName = 'propFit',
+D = document,
+O = Object,
+W = window,
+A = O.assign,
+J = v => JSON.parse(v||'{}'),
+WAL = (...v) => W.addEventListener(...v),
+rand = v => ~~([...crypto.getRandomValues(
+    new Uint32Array(1))
+].map(v => v / 4294967296.5)[0] * v)
+;
+
+//}
+
+// prefs {
+
+const prefs = A({},{
+
+    guess : 0,
+    stats : {
+        
+    },
+    hue : 20
+
+},J(localStorage.appName));
+
+//}
+
+// shape class {
+    
+const Triangle = new class {
+
+    #geom = [
+
+    // triangle
+    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L .866 .5 L 0 .5 A 0 0  0 0 1  0 .5 L -.866 .5 Z `,
+
+    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L 1.155 1 L 0 1 A 0 0  0 0 1  0 1 L -1.155 1 Z `,
+
+    //`M 0 -1.5 L 0 -1.5 A 0 0  0 0 1  0 -1.5 L 0 -1.5 L 1.299 .75 L 0 .75 A 0 0  0 0 1  0 .75 L -1.299 .75 Z `,
+
+    `M 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 1.083 .625 L 0 .625 A 0 0  0 0 1  0 .625 L -1.083 .625 Z `,
+
+    // square
+    `M -1 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1 -1 L 1 1 L 0 1 A 0 0  0 0 1  0 1 L -1 1 Z `,
+    
+    // hexaberg
+    `M -.866 -.5 L 0 -1 A 0 0  0 0 1  0 -1 L .866 -.5 L .866 .5 L 0 1 A 0 0  0 0 1  0 1 L -.866 .5 Z `,
+
+    // circle
+    `M -1 0 L -1 0 A 1 1  0 0 1  1 0 L 1 0 L 1 0 L 1 0 A 1 1 0 0 1 -1 0 L -1 0 Z `,
+
+    // rectangle
+    `M -1.414 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1.414 -1 L 1.414 1 L 0 1 A 0 0  0 0 1  0 1 L -1.414 1 Z `
+
+    ];
+
+    #prop = [0, 1, 2, 3];
+
+    #randGeomIdx = 0;
+    #nextGeomIdx = 0;
+
+    #randPropIdx = 0;
+    #nextPropIdx = 0;
+
+    #GEOM = {
+    };
+
+    nextGeo () {
+
+        this.#nextGeomIdx = (this.#nextGeomIdx + 1) % this.#geom.length;
+        return this.#geom[this.#nextGeomIdx];
+
+    }
+
+    randGeo () {
+
+        this.#randGeomIdx = (this.#randGeomIdx + (1 + rand(this.#geom.length - 1))) % this.#geom.length;
+
+        this.#nextGeomIdx = this.#randGeomIdx;
+
+        return this.#geom[this.#randGeomIdx];
+
+    }
+
+    get curGeo () {
+        return this.#geom[this.#nextGeomIdx];
+    }
+
+    nextProp () {
+        this.#nextPropIdx = (this.#nextPropIdx + 1) % this.#prop.length;
+        return this.#prop[this.#nextPropIdx];
+    }
+
+    randProp () {
+
+        this.#randPropIdx = (this.#randPropIdx + (1 + rand(this.#prop.length - 1))) % this.#prop.length;
+
+        this.#nextPropIdx = this.#randPropIdx;
+
+        return this.#prop[this.#randPropIdx];
+    }
+
+    get curProp () {
+        return this.#nextPropIdx;
+    }
+
+                     
+}
+
+
+
+//}
+
+D.addEventListener('DOMContentLoaded', () => {
+
+    Triangle.randGeo();
+
+    [target_path, guess_path, shaper_path].forEach(v =>
+        v.setAttribute('d', Triangle.curGeo)
+    );
+
+    guess_path.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    guess_path.addEventListener('click', () => {
+    
+        Triangle.randGeo();
+	[target_path, guess_path, shaper_path].forEach(v => 
+            v.setAttribute('d', Triangle.curGeo)
+        );
+
+        target_path.setAttribute('transform', `
+            translate(${-100 + rand(200)} ${-100 + rand(200)})
+            rotate(${rand(500)})
+            scale(${10 + rand(30)})
+        `);
+
+        guess_path.setAttribute('transform', `rotate(${rand(500)})`);
+
+        D.body.style.setProperty('--nose-h', (prefs.hue += 7));
+
+        Triangle.randProp();
+
+        [...scenePropor.children, ...proporButt.children].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+
+        scenePropor.children[Triangle.curProp].classList.add('show');
+        proporButt.children[Triangle.curProp].classList.add('show');
+
+    
+    });
+    
+    shaper_path.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    shaper_path.addEventListener('click', () => {
+        Triangle.nextGeo();
+        [target_path, guess_path, shaper_path].forEach(v => {
+            v.setAttribute('d', Triangle.curGeo);
+        });
+    });
+
+    proporButt.addEventListener('dblclick', e => {
+        e.stopPropagation();
+    }, { passive: false });
+
+    proporButt.addEventListener('click', () => {
+
+        Triangle.nextProp();
+
+        [...scenePropor.children, ...proporButt.children].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+
+        scenePropor.children[Triangle.curProp].classList.add('show');
+        proporButt.children[Triangle.curProp].classList.add('show');
+
+    });
+
+    // toggle full-screen/chart on double click {
+    
+    WAL('dblclick', e => {
+        
+        e.stopPropagation();
+        e.preventDefault();
+        
+        nitro.style.left = '100%';
+
+        guess_path.dispatchEvent(new Event('click'));
+        
+        D.body.requestFullscreen().then((...x)=>{
+            
+            D.body.style.width = '100vw';
+            D.body.style.height = '100vh';
+            
+            WAL('dblclick', e => {
+                
+                e.stopPropagation();
+                e.preventDefault();
+                
+                stats.classList.toggle('deploy');
+                
+            }, { passive: false });
+        
+        });
+        
+        
+    }, { passive: false, once: true });
+    
+    //}
+    
+})
     
 })() === undefined || console.log('exp!red');
 </script>
