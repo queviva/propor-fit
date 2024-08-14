@@ -1,7 +1,7 @@
 <!doctype html><html lang="en">
 <head><title>propr fit</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-<!--link rel="icon" type="image/x-icon" href="../favicon.ico"-->
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
 <style id="bodyStyles">
 
 @font-face {
@@ -102,6 +102,7 @@ body {
 
 #nitro > div {
     position: absolute;
+    border: 2px solid blue;
 }
 
 #nitro > div:nth-of-type(1) {
@@ -116,9 +117,8 @@ body {
     letter-spacing: -.05em;
     color: var(--lightness);
     -webkit-text-stroke: 2px var(--darkness);
-    opacity: 0.2;
+    opacity: 0.05;
     transform: rotate(-20deg);
-    border: 2px solid orange;
     
 }
 
@@ -129,8 +129,6 @@ body {
     text-align: center;
     font-size: 10px;
     color: var(--blackness);
-    border: 2px solid orange;
-    
 }
 
 
@@ -219,50 +217,53 @@ body {
 }
 
 </style>
-<style id="buttsStyles">
+<style id="sButtStyles">
 
-#shaperButt {
+#shape_butt {
     height: 100%;
     width: 100%;
-    border: 2px solid purple;
+    overflow: visible;
+    border: 2px solid orange;
 }
 
-#shaperButt > path {
-    fill: var(--midness);
+#shape_butt > path {
+    fill: url(#shape_pattern);
     stroke-width: 3px;
     stroke: var(--blackness);
     vector-effect: non-scaling-stroke;
-    transition: all linear var(--trans-dur);
+    transition: d linear var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.5) var(--trans-dur);
 }
 
-#proporButt {
-    container-type: size;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+</style>
+<style id="pButtStyles">
+
+#proprButt {
     height: 100%;
+    width: 100%;
+    overflow: visible;
+    border: 2px solid orange;
 }
 
-#proporButt > div {
-    position: absolute;
-    padding-top: 20cqmax;
-    height: 100%;
-    width: 100%;
-    font-family: luckiest;
-    font-size: 100cqmin;
-    color: var(--midness);
-    -webkit-text-stroke: 3px var(--blackness);
+#propr_butt_group {
+    pointer-events: bounding-box;
+}
+
+#propr_butt_group > path {
+    fill: url(#propr_pattern);
+    stroke-width: 3;
+    stroke: var(--blackness);
+    vector-effect: non-scaling-stroke;
+    pointer-events: bounding-box;
+    transform-origin: 20px 25px;
     opacity: 0;
     transform: scale(0);
-    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
-    border: 2px solid purple;
+    transition: opacity linear var(--trans-dur), transform linear calc(0.8 * var(--trans-dur));
 }
 
-#proporButt > div.show {
+#propr_butt_group > path.show {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(0.5);
+    transition: transform cubic-bezier(.2, .3, .6, 1.5) var(--trans-dur);
 }
 
 </style>
@@ -278,7 +279,7 @@ body {
 
 #scene > div, #scene > svg {
     position: absolute;
-    border: 2px solid orange;
+    border: 2px solid blue ;
 }
 
 #sceneSVG {
@@ -291,50 +292,11 @@ body {
     transition: all linear var(--trans-dur);
 }
 
-#scenePropor {
-    container-type: size;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 100px;
-}
-
-#scenePropor > div {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 30cqh;
-    width: 100%;
-    height: 100%;
-    font-family: luckiest;
-    font-size: 140cqh;
-    color: var(--lightness);
-    -webkit-text-stroke: 3px var(--midness);
-    opacity: 0;
-    transform: scale(0);
-    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
-    border: 2px solid purple;
-}
-
-#scenePropor > div.show {
-    opacity: 1;
-    transform: scale(1);
-}
-
-#scenePropor > div.fade {
-    opacity: 0;
-    transition: opacity linear calc(10 * var(--trans-dur));
-}
-
 </style>
-<style id="prop_groupStyles">
+<style id="propr_groupStyles">
 
-.prop_group { }
 
-.prop_group > path {
+#propr_group > path {
     fill: var(--lightness);
     stroke-width: 3;
     stroke: var(--midness);
@@ -342,43 +304,76 @@ body {
     opacity: 0;
     transform-origin: 20px 25px;
     transform: scale(0);
-    transition: all cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur);
+    transition: opacity cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), fill linear var(--trans-dur);
 }
 
-.prop_group > path.show {
-   opacity: 0.5;
-   transform: scale(0.5);
+#propr_group > path.show {
+    opacity: 1;
+    transform: scale(1.5);
 }
 
 </style>
-
 </head>
 
 <body data-vars>
     <div id="frame">
         <div id="scene">
-            <svg id="scenePropor"
-             viewBox="0 0 40 50"
-            >
-            </svg>
             <svg id="sceneSVG"
-             viewBox="-100 -100 200 200"
-             xxx-preserveAspectRatio="xMidYMid"
+             viewBox="-50 -50 100 100"
+             preserveAspectRatio="xMaxYMid"
+             style="width:100px;height:100px;overflow:visible;"
             >
+              <defs>
+                  
+                <pattern id="shape_pattern" x="0" y="0"
+                 width="2" height="2"
+                 patternUnits="userSpaceOnUse"
+                 patternTransform="scale(0.15) rotate(45)"
+                >
+                    <path id="sub_shape_pattern" d="M0 0H2V2H0Z" fill="var(--midness)" />
+                    <path d="M0 0H1V2H0Z" fill="var(--midness)" />
+                </pattern>
+                                  
+                <pattern id="propr_pattern" x="0" y="0"
+                 width="2" height="2"
+                 patternUnits="userSpaceOnUse"
+                 patternTransform="scale(2) rotate(45)"
+                >
+                    <path id="sub_propr_pattern" d="M0 0H2V2H0Z" fill="var(--midness)" />
+                    <path d="M0 0H1V2H0Z" fill="var(--midness)" />
+                </pattern>
+                
+                <marker id="dotmark"
+                     viewBox="-1 -1 2 2"
+                     markerWidth="3"
+                     markerHeight="3"
+                >
+                    <circle r="1" fill="var(--midness)" />
+                </marker>
+                               
+                <marker id="lockmark"
+                     viewBox="-1 -1 2 2"
+                     markerWidth="3"
+                     markerHeight="3"
+                >
+                    <circle r="1"
+                    stroke-width="1"
+                    stroke="var(--blackness)"
+                    fill="var(--whiteness)"
+                    />
+                </marker>
+                
+              </defs>
 
               <path id="target_path"
                d="M0 -1 1.155 1 -1.155 1Z"
                fill="var(--midness)"
                stroke-width="3"
                stroke="var(--blackness)"
-               transform="
-                    translate(-50 -10)
-                    scale(20)
-                    rotate(42)
-               "
               />
 
-              <g id="prop_group" class="prop_group" transform="scale(1) translate(-20 -25)" >
+              <g id="propr_group" transform="scale(1) translate(-20 -25)" >
+                  
                 <path d="M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z" />
 
                 <path d="M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z" />
@@ -397,11 +392,13 @@ body {
                d="M0 -1 1.155 1 -1.155 1Z"
                fill="var(--midness-x)"
                stroke-width="3"
+               xxx-stroke-linejoin="round"
                stroke="var(--blackness)"
                transform="rotate(20)"
-               xxx-stroke-linejoin="round"
                />
               </g>
+
+              
             </svg>
         </div>
         <div id="stats">
@@ -410,17 +407,6 @@ body {
                  viewBox="0 -50 100 100"
                  preserveAspectRatio="xMaxYMid"
                 >
-                  <defs>
-                    <marker id="dotmark"
-                     viewBox="-1 -1 2 2"
-                     markerWidth="3"
-                     markerHeight="3"
-                    >
-                        <circle r="1"
-                         fill="var(--midness)"
-                         />
-                    </marker>
-                  </defs>
                     <path d="
 M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
                     "
@@ -429,65 +415,42 @@ M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
                      marker-end="url(#dotmark)"
                     />
                 </svg>
-                
             </div>
             <div>
-                <div id="shaperDiv">
-                    <svg id="shaperButt"
-                     viewBox="-2 -2 4 4"
-                     preserveAspectRatio="xMidYMid"
-                    >
-                     <path id="shaper_path" d="
-                     M -1 0
-                     L -1 0
-                     A 1 1  0 0 1  1 0
-                     L 1 0
-                     L 1 0
-                     L 1 0
-                     A 1 1 0 0 1 -1 0
-                     L -1 0
-                     Z
-                     " />
-                    </svg>
-                </div>
-                <div id="propButt">
-                <svg viewBox="0 0 40 50"
-                 style="height:100%;width:100%"
-                >
-              <g id="prop_butt_group" class="prop_group">
-                <path d="M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z" />
+              <svg id="shape_butt"
+               viewBox="-2 -2 4 4"
+               preserveAspectRatio="xMidYMid"
+              >
+               <path id="shape_path" />
+              </svg>
+              <svg id="proprButt" viewBox="0 0 40 50">
+                        
+                <g id="propr_butt_group">
+                  
+                      <path d="M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z" />
 
-                <path d="M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z" />
+                      <path stroke-miterlimit="300" d="M0 0ZM40 50ZM 20 0 L 26 5 Q 24 27 26 37 L 30 36 L 31 46 L 14 50 L 11 41 L 16 39 Q 15 27 16 13 L 15 15 L 10 9 Q 15 4 20 0 Z" />
 
-                <path d="M 0 10 C 30 -17 60 20 20 35 L 40 35 L 38 50 L 2 50 L 0 35 C 10 35 27 27 23 22 C 19 19 12 25 10 27 Z" />
+                      <path d="M 0 10 C 30 -17 60 20 20 35 L 40 35 L 38 50 L 2 50 L 0 35 C 10 35 27 27 23 22 C 19 19 12 25 10 27 Z" />
 
-                <path d="M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z" />
+                      <path d="M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z" />
 
-              </g>
+                </g>
 
-	        </svg>
-                </div>
+	          </svg>
             </div>
         </div>
         <div id="nitro">
             <div>
                 PROPR
                 <br data-port>
-                <b>&middot;</b>
-                FIT
+                <b>&middot;</b> FIT
                 <b data-port>&middot;</b>
             </div>
             <div>
-                drag left&#8209;and&#8209;right
-                to resize the middle shape
-                until, in your opinion,
-                it represents the specified
-                proportion of the target shape
-                <br><br>
-                click for the next turn,
-                or just click
-                <i>without resizing</i>
-                to skip that turn
+                drag left&#8209;and&#8209;right to resize the middle shape until, in your opinion, it represents the specified proportion of the target shape
+                <br><br> click for the next turn, or just click
+                <i>without resizing</i> to skip that turn
                 <br><br>
                 <br data-port>
                 <div style="
@@ -502,9 +465,9 @@ M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
                     <span style="font-size:0.4em;">
                         [also to view stats]
                     </span>
-                </div>
             </div>
         </div>
+    </div>
     </div>
 </body>
 
@@ -519,7 +482,8 @@ localStorage.clear();
 //}
 
 new Date() < new Date('2028-10-13') && (() => {
-
+document.addEventListener('DOMContentLoaded', () => {
+    
 // vars and utils {
 
 const
@@ -530,6 +494,9 @@ W = window,
 A = O.assign,
 J = v => JSON.parse(v||'{}'),
 WAL = (...v) => W.addEventListener(...v),
+EDBL = v => v.addEventListener('dblclick', e => {
+    e.stopPropagation(); e.preventDefault();
+}, { passive: false }),
 rand = v => ~~([...crypto.getRandomValues(
     new Uint32Array(1))
 ].map(v => v / 4294967296.5)[0] * v)
@@ -545,7 +512,9 @@ const prefs = A({},{
     stats : {
         
     },
-    hue : 20
+    hue : 20,
+    shapeLock : false,
+    proprLock : false
 
 },J(localStorage.appName));
 
@@ -555,7 +524,14 @@ const prefs = A({},{
     
 const Triangle = new class {
 
-    #geom = [
+    #check = [
+        `'M 9 27 L 14 17 L 14 17 Q 14 17 14 17 L 9 27 Q 9 27 9 27 Q 14 37 9 27 Z'`,
+        `'M 9 27 L 14 17 L 22 33 Q 22 33 22 33 L 23.25 46 Q 23.25 46 23.25 46 Q 14 37 9 27 Z'`,
+        `'M 9 27 L 14 17 L 22 33 Q 27 10 38 -8 L 44 2 Q 32 15.25 23.25 46 Q 14 37 9 27 Z'`
+    ];
+    
+    
+    #shapes = [
 
     // triangle
     //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L .866 .5 L 0 .5 A 0 0  0 0 1  0 .5 L -.866 .5 Z `,
@@ -580,7 +556,24 @@ const Triangle = new class {
 
     ];
 
-    #prop = [
+    #shapeIdx = 0;
+    
+    #incShape (v) {
+        
+        this.#shapeIdx = (this.#shapeIdx + (
+            1 + (v > 0 ? rand(this.#shapes.length - 1) : 0)
+        )) % this.#shapes.length;
+    
+        return this.#shapes[this.#shapeIdx];
+    }
+
+    nextShape () { return this.#incShape(0); }
+    randShape () { return this.#incShape(1); }
+    get curShape () { return this.#shapes[this.#shapeIdx]; }
+    get allShapes () { return this.#shapes; }
+    
+    
+    #proprs = [
 	"M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z ",
 
 	"M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z",
@@ -590,171 +583,256 @@ const Triangle = new class {
 	"M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z"
     ];
 
-    #randGeomIdx = 0;
-    #nextGeomIdx = 0;
-
-    #randPropIdx = 0;
-    #nextPropIdx = 0;
-
-    #GEOM = {
-    };
-
-    nextGeo () {
-
-        this.#nextGeomIdx = (this.#nextGeomIdx + 1) % this.#geom.length;
-        return this.#geom[this.#nextGeomIdx];
-
+    #proprIdx = 0;
+    
+    #incPropr (v) {
+        
+        this.#proprIdx = (this.#proprIdx + (
+            1 + (v > 0 ? rand(this.#proprs.length - 1) : 0)
+        )) % this.#proprs.length;
+    
+        return this.#proprs[this.#proprIdx];
     }
-
-    randGeo () {
-
-        this.#randGeomIdx = (this.#randGeomIdx + (1 + rand(this.#geom.length - 1))) % this.#geom.length;
-
-        this.#nextGeomIdx = this.#randGeomIdx;
-
-        return this.#geom[this.#randGeomIdx];
-
-    }
-
-    get curGeo () {
-        return this.#geom[this.#nextGeomIdx];
-    }
-
-    nextProp () {
-        this.#nextPropIdx = (this.#nextPropIdx + 1) % this.#prop.length;
-        return this.#prop[this.#nextPropIdx];
-    }
-
-    randProp () {
-
-        this.#randPropIdx = (this.#randPropIdx + (1 + rand(this.#prop.length - 1))) % this.#prop.length;
-
-        this.#nextPropIdx = this.#randPropIdx;
-
-        return this.#prop[this.#randPropIdx];
-    }
-
-    get curProp () {
-        return this.#nextPropIdx;
-    }
+    
+    nextPropr () { return this.#incPropr(0); }
+    randPropr () { return this.#incPropr(1); }
+    get curPropr () { return this.#proprIdx; }
+    get allProprs () { return this.#proprs;  }
 
                      
 }
 
+class XXX {
+    
+    constructor (v) {
+        this.list = (typeof v === 'object' && v.length) ? v : [];
+    }
+    
+    list;
+    #listIdx = 0;
+    
+    #incIdx (v) {
+        
+        let M = this.list.length;
+        
+        this.#listIdx = (((this.#listIdx + (
+            (v === 'rand' ? (1 + rand(this.list.length - 1)) : v)
+        )) % M) + M) % M;
+    
+        return this.list[this.#listIdx];
+        
+    }
+    move (v=1) { return this.#incIdx(Number(v)); }
+    rand () { return this.#incIdx('rand'); }
+    get cur () { return this.list[this.#listIdx]; }
+    set cur (v=0) {
+        let M = this.list.length;
+        this.#listIdx = ((v%M)+M)%M;
+    }
+}
+
+const RAT = new XXX(['one','two','three','four','five']);
+log(
+    '\ncurr: ', RAT.cur,
+    '\nset -3: ', (RAT.cur = -3),
+    '\nso, cur is :', RAT.cur
+);
 
 
 //}
 
-D.addEventListener('DOMContentLoaded', () => {
+// setup on load {
 
-    Triangle.randGeo();
+Triangle.randShape();
 
-    [target_path, guess_path, shaper_path].forEach(v =>
-        v.setAttribute('d', Triangle.curGeo)
+[target_path, guess_path, shape_path].forEach(v => {
+    v.setAttribute('d', Triangle.curShape);
+});
+    
+//}
+
+// handle next turn {
+
+EDBL(guess_path);
+
+guess_path.addEventListener('click', () => {
+
+    if (!prefs.shapeLock) Triangle.randShape();
+    
+	    [target_path, guess_path, shape_path].forEach(v =>
+        v.setAttribute('d', Triangle.curShape)
     );
 
-    guess_path.addEventListener('dblclick', e => {
-        e.stopPropagation();
-    }, { passive: false });
+    target_path.setAttribute('transform', `
+        translate(
+            ${(rand(2)<1?-1:1) * (sceneW+rand(adjustW))},
+            ${(rand(2)<1?-1:1) * (sceneH+rand(adjustH))}
+        )
+        scale(${5 + rand(100)})
+        rotate(${rand(500)})
+    `);
 
-    guess_path.addEventListener('click', () => {
+    guess_path.setAttribute('transform', `rotate(${rand(500)})`);
+
+    if (!prefs.proprLock) Triangle.randPropr();
+
+    [...propr_group.children, ...propr_butt_group.children]
+    .forEach(v => {
+        v.classList.remove('show');
+        v.classList.remove('fade');
+    });
+
+    propr_group.children[Triangle.curPropr].classList.add('show');
     
-        Triangle.randGeo();
-	[target_path, guess_path, shaper_path].forEach(v => 
-            v.setAttribute('d', Triangle.curGeo)
+    propr_butt_group.children[Triangle.curPropr].classList.add('show');
+
+    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
+
+});
+
+//}
+    
+// shape button {
+
+// choke double clicks on the shape itself
+EDBL(shape_path);
+
+// change shape on click of shape itself
+shape_path.addEventListener('click', () => {
+    if (prefs.shapeLock) return;
+    Triangle.nextShape();
+    [target_path, guess_path, shape_path].forEach(v => {
+        v.setAttribute('d', Triangle.curShape);
+    });
+
+    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
+
+});
+
+// lock shape on double click in button area
+shape_butt.addEventListener('dblclick', e => {
+    
+    e.stopPropagation();
+    e.preventDefault();
+    prefs.shapeLock = !prefs.shapeLock;
+    
+    sub_shape_pattern.setAttribute('fill',
+        prefs.shapeLock ? 'var(--whiteness)':'var(--midness)'
+    );
+    
+    ['start', 'mid', 'end'].forEach(v => {
+        shape_path.setAttribute('marker-' + v,
+            prefs.shapeLock ? 'url(#lockmark)' : 'none'
         );
-
-        target_path.setAttribute('transform', `
-            translate(${-100 + rand(200)} ${-100 + rand(200)})
-            rotate(${rand(500)})
-            scale(${10 + rand(30)})
-        `);
-
-        guess_path.setAttribute('transform', `rotate(${rand(500)})`);
-
-
-        Triangle.randProp();
-
-        [...prop_group.children, ...prop_butt_group.children].forEach(v => {
-            v.classList.remove('show');
-            v.classList.remove('fade');
-        });
-
-        prop_group.children[Triangle.curProp].classList.add('show');
-        prop_butt_group.children[Triangle.curProp].classList.add('show');
-
-        D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-    
     });
     
-    shaperDiv.addEventListener('dblclick', e => {
-        e.stopPropagation();
-    }, { passive: false });
+}, { passive: false });
 
-    shaperDiv.addEventListener('click', () => {
-        Triangle.nextGeo();
-        [target_path, guess_path, shaper_path].forEach(v => {
-            v.setAttribute('d', Triangle.curGeo);
-        });
+//}
 
-        D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-
-    });
-
-    propButt.addEventListener('dblclick', e => {
-        e.stopPropagation();
-    }, { passive: false });
-
-    propButt.addEventListener('click', () => {
-
-        Triangle.nextProp();
-
-        [...prop_group.children, ...prop_butt_group.children].forEach(v => {
-            v.classList.remove('show');
-            v.classList.remove('fade');
-        });
-
-        prop_group.children[Triangle.curProp].classList.add('show');
-        prop_butt_group.children[Triangle.curProp].classList.add('show');
-
-        D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-
-    });
+// propr button {
 
 
-    // toggle full-screen/chart on double click {
+// choke double clicks on the propr numbers and group
+[...propr_butt_group.children, propr_butt_group].forEach(v => EDBL(v));
+
+// change propr on click {
+propr_butt_group.addEventListener('click', e => {
     
-    WAL('dblclick', e => {
-        
-        e.stopPropagation();
-        e.preventDefault();
-        
-        nitro.style.left = '100%';
+    e.stopPropagation();
+    e.preventDefault();
+    
+    if (prefs.proprLock) return;
 
-        guess_path.dispatchEvent(new Event('click'));
+    Triangle.nextPropr();
+
+    [...propr_group.children, ...propr_butt_group.children].forEach(v => {
+        v.classList.remove('show');
+        v.classList.remove('fade');
+    });
+
+    propr_group.children[Triangle.curPropr].classList.add('show');
+    propr_butt_group.children[Triangle.curPropr].classList.add('show');
+
+    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
+
+});
+
+// lock propr on doubleclick of butt area
+proprButt.addEventListener('dblclick', e => {
+    
+    e.stopPropagation();
+    e.preventDefault();
+    prefs.proprLock = !prefs.proprLock;
+    
+    sub_propr_pattern.setAttribute('fill',
+        prefs.proprLock ? 'var(--whiteness)':'var(--midness)'
+    );
+    
+},{ passive: false });
+
+//}
+
+//}
+
+// toggle full-screen/chart on double click {
+
+WAL('dblclick', e => {
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    nitro.style.left = '100%';
+
+    guess_path.dispatchEvent(new Event('click'));
+    
+    //D.body.requestFullscreen().then((...x) => {
         
-        D.body.requestFullscreen().then((...x)=>{
+        D.body.style.width = '100vw';
+        D.body.style.height = '100vh';
+        
+        WAL('dblclick', e => {
             
-            D.body.style.width = '100vw';
-            D.body.style.height = '100vh';
+            e.stopPropagation();
+            e.preventDefault();
             
-            WAL('dblclick', e => {
-                
-                e.stopPropagation();
-                e.preventDefault();
-                
-                stats.classList.toggle('deploy');
-                
-            }, { passive: false });
-        
-        });
-        
-        
-    }, { passive: false, once: true });
+            stats.classList.toggle('deploy');
+            
+        }, { passive: false });
     
-    //}
+    //});
     
-})
     
-})() === undefined || console.log('exp!red');
+}, { passive: false, once: true });
+
+//}
+
+// throttled re-set init vals {
+
+let adjustW;
+let adjustH;
+let sceneW;
+let sceneH;
+
+const resetVals = () => {
+    
+    let BB = sceneSVG.getBBox();
+    sceneW = BB.width /2;
+    sceneH = BB.height/2;
+    adjustW = (-1*((BB.width/2) + 5)) + parseInt(scene.offsetWidth /2);
+    adjustH = (-1*((BB.height/2) + 5)) + parseInt(scene.offsetHeight/2);
+    
+}
+resetVals();
+
+let resizeThrottle;
+
+WAL('resize', e => {
+    clearTimeout(resizeThrottle);
+    resizeThrottle = setTimeout(resetVals, 300);
+});
+    
+//}
+
+})})() === undefined || console.log('exp!red');
 </script>
