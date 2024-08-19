@@ -1,8 +1,8 @@
 <!doctype html><html lang="en">
 <head><title>propr fit</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="../favicon.ico">
-<style id="bodyStyles">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style id="boddyStyles">
 
 @font-face {
     font-family : luckiest;
@@ -13,6 +13,15 @@
     box-sizing: border-box;
     word-wrap: break-word;
 }
+
+/*
+body * { --bord: #000; border : 5px solid var(--bord); }
+body > * { --bord: red; }
+body > * > * { --bord: green; }
+body > * > * > * { --bord: orange; }
+body > * > * > * > * { --bord: purple; }
+body > * > * > * > * > * { --bord: blue; }
+*/
 
 body[data-vars] {
     
@@ -63,22 +72,46 @@ body {
 }
 
 </style>
+<style id="xSVGxStyles">
+
+svg {
+    overflow: visible;
+}
+
+path {
+    vector-effect: non-scaling-stroke;
+    stroke-miterlimit: 300;
+    stroke-width: 3px;
+    stroke: var(--lightness);
+    transition: all linear var(--trans-dur);
+}
+
+pattern path {
+    fill: var(--midness);
+    stroke-width: 0;
+    stroke: none;
+}
+
+circle {
+    transition: all linear var(--trans-dur);
+}
+
+</style>
 <style id="frameStyles">
 
 #frame {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: var(--greyness);
+    background-color: var(--blackness);
     overflow: hidden;
-    border: 2px solid red;
+    transition: background-color linear var(--trans-dur);
 }
 
 #frame > div {
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 2px solid green;
 }
 
 #frame .deploy {
@@ -95,14 +128,13 @@ body {
     align-items: center;
     justify-content: center;
     left: 0%;
-    background-color: var(--greyness);
+    background-color: var(--blackness);
     user-select: none;
     transition: left linear var(--trans-dur);
 }
 
 #nitro > div {
     position: absolute;
-    border: 2px solid blue;
 }
 
 #nitro > div:nth-of-type(1) {
@@ -128,9 +160,45 @@ body {
     hyphens: auto;
     text-align: center;
     font-size: 10px;
-    color: var(--blackness);
+    color: var(--whiteness);
 }
 
+
+</style>
+<style id="sceneStyles">
+
+#scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+#scene > div, #scene > svg {
+    position: absolute;
+}
+
+#sceneSVG {
+    height: 100%;
+    width: 100%;
+}
+
+</style>
+<style id="proprStyles">
+
+#propr_group > path {
+    fill: var(--lightness);
+    stroke: var(--midness);
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), fill linear var(--trans-dur);
+}
+
+#propr_group > path.show {
+    opacity: 1;
+    transform: scale(1.7);
+}
 
 </style>
 <style id="statsStyles">
@@ -151,32 +219,24 @@ body {
     justify-content: center;
 }
 
-#stats > div {
-    border: 2px solid blue;
-}
-
-#stats > div:nth-of-type(2) > div {
-    border: 2px solid orange;
-}
-
 @media (orientation: landscape) {
     
     #stats {
         flex-direction: row;
     }
 
-    #stats > div:nth-of-type(1) {
+    #stats > :nth-child(1) {
         width: 80%;
         height: 100%;
     }
 
-    #stats > div:nth-of-type(2) {
+    #stats > :nth-child(2) {
         flex-direction: column;
         width: 20%;
         height: 100%;
     }
 
-    #stats > div:nth-of-type(2) > div {
+    #stats > :nth-child(2) > div {
         height: 50%;
         width: 100%;
     }
@@ -189,18 +249,18 @@ body {
         flex-direction: column;
     }
 
-    #stats > div:nth-of-type(1) {
+    #stats > :nth-child(1) {
         width: 100%;
         height: 80%;
     }
 
-    #stats > div:nth-of-type(2) {
+    #stats > :nth-child(2) {
         flex-direction: row-reverse;
         width: 100%;
         height: 20%;
     }
 
-    #stats > div:nth-of-type(2) > div {
+    #stats > :nth-child(2) > div {
         height: 100%;
         width: 50%;
     }
@@ -209,11 +269,9 @@ body {
 </style>
 <style id="chartStyles">
 
-#chart > path {
+#chart path {
     fill: none;
-    stroke-width: 2px;
     stroke: var(--lightness);
-    vector-effect: non-scaling-stroke;
 }
 
 </style>
@@ -222,26 +280,20 @@ body {
 #shape_butt {
     height: 100%;
     width: 100%;
-    overflow: visible;
-    border: 2px solid orange;
 }
 
 #shape_butt > path {
     fill: url(#shape_pattern);
-    stroke-width: 3px;
     stroke: var(--blackness);
-    vector-effect: non-scaling-stroke;
     transition: d linear var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.5) var(--trans-dur);
 }
 
 </style>
 <style id="pButtStyles">
 
-#proprButt {
+#propr_butt {
     height: 100%;
     width: 100%;
-    overflow: visible;
-    border: 2px solid orange;
 }
 
 #propr_butt_group {
@@ -250,11 +302,8 @@ body {
 
 #propr_butt_group > path {
     fill: url(#propr_pattern);
-    stroke-width: 3;
     stroke: var(--blackness);
-    vector-effect: non-scaling-stroke;
     pointer-events: bounding-box;
-    transform-origin: 20px 25px;
     opacity: 0;
     transform: scale(0);
     transition: opacity linear var(--trans-dur), transform linear calc(0.8 * var(--trans-dur));
@@ -262,54 +311,8 @@ body {
 
 #propr_butt_group > path.show {
     opacity: 1;
-    transform: scale(0.5);
+    transform: scale(0.6);
     transition: transform cubic-bezier(.2, .3, .6, 1.5) var(--trans-dur);
-}
-
-</style>
-<style id="sceneStyles">
-
-#scene {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-}
-
-#scene > div, #scene > svg {
-    position: absolute;
-    border: 2px solid blue ;
-}
-
-#sceneSVG {
-    height: 100%;
-    width: 100%;
-}
-
-#sceneSVG path {
-    vector-effect: non-scaling-stroke;
-    transition: all linear var(--trans-dur);
-}
-
-</style>
-<style id="propr_groupStyles">
-
-
-#propr_group > path {
-    fill: var(--lightness);
-    stroke-width: 3;
-    stroke: var(--midness);
-    vector-effect: non-scaling-stroke;
-    opacity: 0;
-    transform-origin: 20px 25px;
-    transform: scale(0);
-    transition: opacity cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), fill linear var(--trans-dur);
-}
-
-#propr_group > path.show {
-    opacity: 1;
-    transform: scale(1.5);
 }
 
 </style>
@@ -320,9 +323,10 @@ body {
         <div id="scene">
             <svg id="sceneSVG"
              viewBox="-50 -50 100 100"
-             preserveAspectRatio="xMaxYMid"
-             style="width:100px;height:100px;overflow:visible;"
+             preserveAspectRatio="xMaxYMid meet"
+             style="width:100px;height:100px;"
             >
+                
               <defs>
                   
                 <pattern id="shape_pattern" x="0" y="0"
@@ -330,8 +334,8 @@ body {
                  patternUnits="userSpaceOnUse"
                  patternTransform="scale(0.15) rotate(45)"
                 >
-                    <path id="sub_shape_pattern" d="M0 0H2V2H0Z" fill="var(--midness)" />
-                    <path d="M0 0H1V2H0Z" fill="var(--midness)" />
+                    <path id="sub_shape_pattern"d="M0 0H2V2H0Z" />
+                    <path d="M0 0H1V2H0Z" />
                 </pattern>
                                   
                 <pattern id="propr_pattern" x="0" y="0"
@@ -339,103 +343,92 @@ body {
                  patternUnits="userSpaceOnUse"
                  patternTransform="scale(2) rotate(45)"
                 >
-                    <path id="sub_propr_pattern" d="M0 0H2V2H0Z" fill="var(--midness)" />
-                    <path d="M0 0H1V2H0Z" fill="var(--midness)" />
+                    <path id="sub_propr_pattern" d="M0 0H2V2H0Z" />
+                    <path d="M0 0H1V2H0Z" />
                 </pattern>
                 
                 <marker id="dotmark"
-                     viewBox="-1 -1 2 2"
-                     markerWidth="3"
-                     markerHeight="3"
+                 viewBox="-1 -1 2 2"
+                 markerWidth="3"
+                 markerHeight="3"
                 >
-                    <circle r="1" fill="var(--midness)" />
+                  <circle r="1" fill="var(--midness)" />
                 </marker>
                                
                 <marker id="lockmark"
-                     viewBox="-1 -1 2 2"
-                     markerWidth="3"
-                     markerHeight="3"
+                 viewBox="-1 -1 2 2"
+                 markerWidth="3"
+                 markerHeight="3"
                 >
-                    <circle r="1"
-                    stroke-width="1"
-                    stroke="var(--blackness)"
-                    fill="var(--whiteness)"
-                    />
+                  <circle r="1"
+                   stroke-width="1"
+                   stroke="var(--blackness)"
+                   fill="var(--whiteness)"
+                   />
                 </marker>
                 
               </defs>
 
-              <path id="target_path"
-               d="M0 -1 1.155 1 -1.155 1Z"
-               fill="var(--midness)"
-               stroke-width="3"
-               stroke="var(--blackness)"
-              />
+              <path id="target_path" fill="var(--midness)" />
 
-              <g id="propr_group" transform="scale(1) translate(-20 -25)" >
-                  
-                <path d="M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z" />
+              <g id="propr_group" />
 
-                <path d="M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z" />
-
-                <path d="M 0 10 C 30 -17 60 20 20 35 L 40 35 L 38 50 L 2 50 L 0 35 C 10 35 27 27 23 22 C 19 19 12 25 10 27 Z" />
-
-                <path d="M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z" />
-
+              <g id="guess_scale" >
+                <path id="guess_path" fill="var(--midness-x)" />
               </g>
 
-
-              <g id="guess_scale"
-                transform="scale(50)"
-              >
-              <path id="guess_path"
-               d="M0 -1 1.155 1 -1.155 1Z"
-               fill="var(--midness-x)"
-               stroke-width="3"
-               xxx-stroke-linejoin="round"
-               stroke="var(--blackness)"
-               transform="rotate(20)"
-               />
-              </g>
-
-              
             </svg>
         </div>
         <div id="stats">
             <div>
                 <svg id="chart"
-                 viewBox="0 -50 100 100"
+                 viewBox="-25 -25 50 50"
                  preserveAspectRatio="xMaxYMid"
+                 width="100%"
+                 xxx-height="100% DO NOT DO THIS!!!"
+                 style="margin: 0px 20px;"
                 >
-                    <path d="
-M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
-                    "
+                  <g transform="translate(-25)">
+                    <path id="mid_line"
+                     d="M0 0 50 0"
+                     style="
+                        fill:none;
+                        stroke-width: 1px;
+                        stroke: var(--whiteness);
+                        opacity: 0.5;
+                     "
+                    />
+                    <path id="ave_line"
+                     d="M25 0 25 0"
+                     style="
+                        fill:none;
+                        stroke-width: 1px;
+                        stroke: var(--midness);
+                        opacity: 0.5;
+                     "
+                    />
+                    <path id="stat_line"
+                     d="M25 0 25 0"
                      marker-start="url(#dotmark)"
                      marker-mid="url(#dotmark)"
                      marker-end="url(#dotmark)"
                     />
+                  </g>
                 </svg>
             </div>
             <div>
               <svg id="shape_butt"
                viewBox="-2 -2 4 4"
-               preserveAspectRatio="xMidYMid"
+               preserveAspectRatio="xMidYMid meet"
               >
                <path id="shape_path" />
               </svg>
-              <svg id="proprButt" viewBox="0 0 40 50">
+              <svg id="propr_butt"
+               viewBox="-20 -25 40 50"
+               preserveAspectRatio="xMidYMid meet"
+              >
                         
-                <g id="propr_butt_group">
-                  
-                      <path d="M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z" />
-
-                      <path stroke-miterlimit="300" d="M0 0ZM40 50ZM 20 0 L 26 5 Q 24 27 26 37 L 30 36 L 31 46 L 14 50 L 11 41 L 16 39 Q 15 27 16 13 L 15 15 L 10 9 Q 15 4 20 0 Z" />
-
-                      <path d="M 0 10 C 30 -17 60 20 20 35 L 40 35 L 38 50 L 2 50 L 0 35 C 10 35 27 27 23 22 C 19 19 12 25 10 27 Z" />
-
-                      <path d="M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z" />
-
-                </g>
+                <g id="propr_butt_group" />
 
 	          </svg>
             </div>
@@ -448,8 +441,8 @@ M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
                 <b data-port>&middot;</b>
             </div>
             <div>
-                drag left&#8209;and&#8209;right to resize the middle shape until, in your opinion, it represents the specified proportion of the target shape
-                <br><br> click for the next turn, or just click
+                slide left&#8209;and&#8209;right to resize the middle shape until, in your opinion, it represents the specified proportion of the target shape
+                <br><br> click for the next shape, or just click
                 <i>without resizing</i> to skip that turn
                 <br><br>
                 <br data-port>
@@ -475,7 +468,7 @@ M 5 0 15 0 25 0 35 0 45 0 55 0 65 0 75 0 85 0 95 0
 //////////////////////////////////////////////////
 // pizzaFace - MCMLXXXVIII                  /{
 //
-// DEBUGG
+// !! DEBUGG !!
 'use strict'
 const log = console.log;
 localStorage.clear();
@@ -493,13 +486,33 @@ O = Object,
 W = window,
 A = O.assign,
 J = v => JSON.parse(v||'{}'),
+G = (...v) => v.sort((a, b) => a - b)[1],
 WAL = (...v) => W.addEventListener(...v),
 EDBL = v => v.addEventListener('dblclick', e => {
     e.stopPropagation(); e.preventDefault();
 }, { passive: false }),
-rand = v => ~~([...crypto.getRandomValues(
-    new Uint32Array(1))
-].map(v => v / 4294967296.5)[0] * v)
+DB = (f, p) => {
+    let t;
+    return (...v) => {
+        clearTimeout(t);
+        t = setTimeout(() => f(...v), p);
+    };
+},
+NS = (
+    v, p={}, obj=D.createElementNS('http://www.w3.org/2000/svg', v)
+) => {
+    
+    O.entries(p).forEach(a => {
+        obj.setAttribute(...a);
+    });
+    
+    return obj;
+    
+},
+rand = v => ~~(crypto.getRandomValues(
+    new Uint32Array(1))[0] / (2 ** 32) * v
+);
+
 ;
 
 //}
@@ -508,10 +521,20 @@ rand = v => ~~([...crypto.getRandomValues(
 
 const prefs = A({},{
 
-    guess : 0,
-    stats : {
-        
-    },
+    stats : [],
+    stats_max : 11,
+    
+    guess : 50,
+    guess_min : 5,
+    guess_max : 200,
+    guess_actually_attempted : false,
+    
+    target_propr : 1,
+    target_scale : 50,
+    target_min : 10,
+    target_max : 100,
+    target_gap : 20,
+    
     hue : 20,
     shapeLock : false,
     proprLock : false
@@ -520,193 +543,354 @@ const prefs = A({},{
 
 //}
 
-// shape class {
+// classexs {
     
-const Triangle = new class {
+class Xarray extends Array {
+    
+    #arrayIndex = 0;
+    
+    #updateIndex (v) {
+        
+        let length = this.length;
+        
+        this.#arrayIndex = (((this.#arrayIndex + (
+            (v === 'rand' ? (1 + rand(this.length - 1)) : v)
+        )) % length) + length) % length;
+    
+        return this[this.#arrayIndex];
+        
+    }
+    
+    get nextItem () { return this.#updateIndex(1); }
+    get prevItem () { return this.#updateIndex(-1); }
+    get randItem () { return this.#updateIndex('rand'); }
+    get currItem () { return this[this.#arrayIndex]; }
+    set currItem (v=0) {
+        let length = this.length;
+        this.#arrayIndex = ((v % length) + length) % length;
+    }
+    get currIndex () { return this.#arrayIndex; }
+    
+}
 
-    #check = [
-        `'M 9 27 L 14 17 L 14 17 Q 14 17 14 17 L 9 27 Q 9 27 9 27 Q 14 37 9 27 Z'`,
-        `'M 9 27 L 14 17 L 22 33 Q 22 33 22 33 L 23.25 46 Q 23.25 46 23.25 46 Q 14 37 9 27 Z'`,
-        `'M 9 27 L 14 17 L 22 33 Q 27 10 38 -8 L 44 2 Q 32 15.25 23.25 46 Q 14 37 9 27 Z'`
-    ];
-    
-    
-    #shapes = [
+const Shapes = new Xarray (
+    //{
 
+    // heart
+    //`M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
+    
     // triangle
-    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L .866 .5 L 0 .5 A 0 0  0 0 1  0 .5 L -.866 .5 Z `,
-
-    //`M 0 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 0 -1 L 1.155 1 L 0 1 A 0 0  0 0 1  0 1 L -1.155 1 Z `,
-
-    //`M 0 -1.5 L 0 -1.5 A 0 0  0 0 1  0 -1.5 L 0 -1.5 L 1.299 .75 L 0 .75 A 0 0  0 0 1  0 .75 L -1.299 .75 Z `,
-
-    `M 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 1.083 .625 L 0 .625 A 0 0  0 0 1  0 .625 L -1.083 .625 Z `,
-
+    `M 0 .625 L -1.083 .625 A 0 0  0 0 1  -1.083 .625 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 1.083 .625 A 0 0  0 0 1  1.083 .625 Z`,
+    
+    // circle
+    `M 0 1 L 0 1 A 1 1  0 0 1  -1 0 L -1 0 A 1 1  0 0 1  0 -1 L 0 -1 L 0 -1 A 1 1  0 0 1  1 0 L 1 0 A 1 1  0 0 1  0 1 Z`,
+    
     // square
-    `M -1 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1 -1 L 1 1 L 0 1 A 0 0  0 0 1  0 1 L -1 1 Z `,
+    `M 0 1 L -1 1 A 0 0  0 0 1  -1 1 L -1 -1 A 0 0  0 0 1  -1 -1 L 0 -1 L 1 -1 A 0 0  0 0 1  1 -1 L 1 1 A 0 0  0 0 1  1 1 Z`,
     
     // hexaberg
-    `M -.866 -.5 L 0 -1 A 0 0  0 0 1  0 -1 L .866 -.5 L .866 .5 L 0 1 A 0 0  0 0 1  0 1 L -.866 .5 Z `,
-
-    // circle
-    `M -1 0 L -1 0 A 1 1  0 0 1  1 0 L 1 0 L 1 0 L 1 0 A 1 1 0 0 1 -1 0 L -1 0 Z `,
-
+    `M 0 1 L -.866 .5 A 0 0  0 0 1  -.866 .5 L -.866 -.5 A 0 0  0 0 1  -.866 -.5 L 0 -1 L .866 -.5 A 0 0  0 0 1  .866 -.5 L .866 .5 A 0 0  0 0 1  .866 .5 Z`,
+    
     // rectangle
-    `M -1.414 -1 L 0 -1 A 0 0  0 0 1  0 -1 L 1.414 -1 L 1.414 1 L 0 1 A 0 0  0 0 1  0 1 L -1.414 1 Z `
-
-    ];
-
-    #shapeIdx = 0;
+    `M 0 1 L -1.414 1 A 0 0  0 0 1  -1.414 1 L -1.414 -1 A 0 0  0 0 1  -1.414 -1 L 0 -1 L 1.414 -1 A 0 0  0 0 1  1.414 -1 L 1.414 1 A 0 0  0 0 1  1.414 1 Z`
+    //}
+);
+const Proprs = new Xarray (
+    //{
     
-    #incShape (v) {
-        
-        this.#shapeIdx = (this.#shapeIdx + (
-            1 + (v > 0 ? rand(this.#shapes.length - 1) : 0)
-        )) % this.#shapes.length;
+    // one/half (1/2)
+    //`M 5 -21 Q -4 -1 -9 20 L -12 15 Q -4 -5 1 -24 L 1 -24 Z   M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z   M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z`,
+    `M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z  M 3 -24 L 8 -19.4 L -10 20 L -14.3 15 Z  M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z`,
     
-        return this.#shapes[this.#shapeIdx];
-    }
-
-    nextShape () { return this.#incShape(0); }
-    randShape () { return this.#incShape(1); }
-    get curShape () { return this.#shapes[this.#shapeIdx]; }
-    get allShapes () { return this.#shapes; }
+    // one (1)
+    `M -8 -6 L -13 -13 Q -7.5 -20 0 -25 L 7 -17 Q 5.5 0  6 10.5 L 11 11 L 10 25 L -10 25 L -11 12 L -6.25 11 L -6 -8 Z`,
     
+    // two (2)
+    `M -20 -15 C 10 -42 40 -5 0 10 L 20 10 L 18 25 L -18 25 L -20 10 C -10 10 7 2 3 -3 C -1 -6 -8 0 -10 2 Z`,
     
-    #proprs = [
-	"M 25 4 Q 16 24 11 45 L 8 40 Q 16 20 21 1 L 21 1 Z M 18 25 C 34 8 50 32 30 40 L 40 40 L 38 50 L 21 50 L 20 40 C 30 40 29 30 23 36 Z M 6 0 L 11 5 L 11 30 L 5 34 L 5 12 L 0 9 Z ",
-
-	"M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z",
-
-	"M 0 10 C 30 -17 60 20 20 35 L 40 35 L 38 50 L 2 50 L 0 35 C 10 35 27 27 23 22 C 19 19 12 25 10 27 Z",
-
-	"M 3 1 Q 20 -1 39 1 L 37 16 Q 33 16 30 18 C 42 25 42 38 35 45 S 5 55 0 30 L 15 20 C 15 22 21 30 25 25 S 21 20 20 20 Q 25 18 26 15 Q 14 15 5 17 Q 3 10 3 1 Z"
-    ];
-
-    #proprIdx = 0;
-    
-    #incPropr (v) {
-        
-        this.#proprIdx = (this.#proprIdx + (
-            1 + (v > 0 ? rand(this.#proprs.length - 1) : 0)
-        )) % this.#proprs.length;
-    
-        return this.#proprs[this.#proprIdx];
-    }
-    
-    nextPropr () { return this.#incPropr(0); }
-    randPropr () { return this.#incPropr(1); }
-    get curPropr () { return this.#proprIdx; }
-    get allProprs () { return this.#proprs;  }
-
-                     
-}
-
-class XXX {
-    
-    constructor (v) {
-        this.list = (typeof v === 'object' && v.length) ? v : [];
-    }
-    
-    list;
-    #listIdx = 0;
-    
-    #incIdx (v) {
-        
-        let M = this.list.length;
-        
-        this.#listIdx = (((this.#listIdx + (
-            (v === 'rand' ? (1 + rand(this.list.length - 1)) : v)
-        )) % M) + M) % M;
-    
-        return this.list[this.#listIdx];
-        
-    }
-    move (v=1) { return this.#incIdx(Number(v)); }
-    rand () { return this.#incIdx('rand'); }
-    get cur () { return this.list[this.#listIdx]; }
-    set cur (v=0) {
-        let M = this.list.length;
-        this.#listIdx = ((v%M)+M)%M;
-    }
-}
-
-const RAT = new XXX(['one','two','three','four','five']);
-log(
-    '\ncurr: ', RAT.cur,
-    '\nset -3: ', (RAT.cur = -3),
-    '\nso, cur is :', RAT.cur
+    // three (3)
+    `M -17 -25 L 20 -25 L 18 -11 Q 12 -11 9 -8.2 C 18.5 -5 23 7.7 18 15 C 5.685 34.544 -20.538 21.985 -19.992 5.54 L -6.6 -7 C -6.6 1.5 3 2.3 6 -1.4 C 7.813 -3.669 5.392 -7.34 -0.033 -7.34 L 5 -11 L -15 -11 Z `
+    //}
+);
+const Checks = new Xarray (
+    //{
+    `'M 9 27 L 14 17 L 14 17 Q 14 17 14 17 L 9 27 Q 9 27 9 27 Q 14 37 9 27 Z'`,
+    `'M 9 27 L 14 17 L 22 33 Q 22 33 22 33 L 23.25 46 Q 23.25 46 23.25 46 Q 14 37 9 27 Z'`,
+    `'M 9 27 L 14 17 L 22 33 Q 27 10 38 -8 L 44 2 Q 32 15.25 23.25 46 Q 14 37 9 27 Z'`
+    //}
 );
 
+//}
+
+// a statsex object {
+
+class StatArray extends Array {
+    
+    constructor (v) {
+        super();
+        if (v?.vals?.length) {
+            this.push(...v.vals);
+        }
+        let { vals, ...rest } = v;
+        for (let i in rest) {
+            this[i] = v[i];
+        }
+        return this;
+    }
+    
+    push (v) {
+        
+        // add the new value
+        super.push(v);
+        
+        // increment the count
+        this.cnt++;
+        
+        // if the array is too short
+        if (this.length <= this.siz) {
+            
+            // if there is no average yet
+            if(this.ave == '') {
+                
+                // then ave is just the current val
+                this.ave = v;
+                
+            } else {
+                
+                // otherwise, average the array
+                this.ave = this.reduce((a,b)=>a+b,0)/this.length;
+                
+            }
+            
+        } else { // array is long enough
+        
+            super.shift();
+        
+            // update the running average
+            this.ave = (((this.cnt - 1) * this.ave) + v) / this.cnt;
+            
+        }
+        
+        // update min/max
+        this.min = Math.min(...this, this.min);
+        this.max = Math.max(...this, this.max);
+        
+        return this.serialize();
+        
+    }
+    
+    makeStatLine () {
+        let tmp =
+            this.length === 0 ?
+            `M${new Array(this.siz).fill(`25 0`).join(' ')}` :
+            
+            this.length === 1 ?
+            `M${new Array(this.siz).fill(`25 ${1 - this.ave}`).join(' ')}` :
+            
+            this.length < this.siz ?
+            `M${new Array(this.siz - this.length).fill(`0 ${1 - this[0]}`).join(' ')} ${this.map((v, i) => `${(50/(this.length - 1)) * i} ${1 - v}`)}` :
+            
+            `M${this.map((v, i) => `${(50/(this.siz - 1)) * i} ${1 - v}`)}`;
+        log(tmp);
+        return tmp;
+    }
+    
+    makeAveLine () {
+        return this.ave === '' ?
+            `M25 0 25 0` :
+            `M0 ${1 - this.ave} 50 ${1 - this.ave}`;
+    }
+    
+    serialize () {
+        return JSON.stringify(
+            Object.assign({}, { vals: [...this] }, this)
+        );
+    }
+
+    static deserialize (serializedData) {
+        return new StatArray(JSON.parse(serializedData));
+    }
+    
+}
+
+const AllStats = Proprs.map((p, i) => {
+    return Shapes.map((s, j) => {
+        if (!prefs.stats[i]) {
+            prefs.stats[i] = [];
+        }
+        if (prefs.stats[i]?.[j]) {
+            return StatArray.deserialize(prefs.stats[i][j]);
+        } else {
+            const tmp = StatArray.deserialize(
+                JSON.stringify({
+                    vals: [],
+                    siz: prefs.stats_max,
+                    cnt: 0,
+                    ave: '',
+                    min: '',
+                    max: '',
+                    std: '',
+                    cov: ''
+                })
+            );
+            prefs.stats[i][j] = tmp.serialize();
+            return tmp;
+        }
+    });
+});
 
 //}
 
-// setup on load {
-
-Triangle.randShape();
+// fill the shapes on load {
 
 [target_path, guess_path, shape_path].forEach(v => {
-    v.setAttribute('d', Triangle.curShape);
+    v.setAttribute('d', Shapes.currItem);
 });
+
+guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
+
+//}
+
+// fill the porprs on load {
+Proprs.forEach(propr => {
+    
+    [propr_group, propr_butt_group].forEach(g => {
+        
+        g.append(NS('path',{
+            
+            d:`M -20 -25Z ${propr} M20 25Z`
+          //d: propr
+            
+        }));
+        
+    });
+    
+});
+
     
 //}
 
-// handle next turn {
+// handel a submitted guess {
 
 EDBL(guess_path);
 
 guess_path.addEventListener('click', () => {
-
-    if (!prefs.shapeLock) Triangle.randShape();
     
-	    [target_path, guess_path, shape_path].forEach(v =>
-        v.setAttribute('d', Triangle.curShape)
+    // if a guess was actually attempted {
+    if (prefs.guess_actually_attempted) {
+    
+        // push the value in to the stats object
+        prefs.stats[Proprs.currIndex][Shapes.currIndex] =
+        AllStats[Proprs.currIndex][Shapes.currIndex].push(
+            prefs.guess ** 2 /
+           (prefs.target_propr *
+            prefs.target_scale ** 2)
+            
+        );
+        
+        // reset guess maker
+        prefs.guess_actually_attempted = false;
+        
+    }
+    //}
+    
+    // pick a random shape if not locked
+    if (!prefs.shapeLock) Shapes.randItem;
+    
+    // set all paths to the current shape
+    [target_path, guess_path, shape_path].forEach(v =>
+        v.setAttribute('d', Shapes.currItem)
     );
 
+    // pick a ranged-random target scale {
+    prefs.target_scale = prefs.target_min + (
+        ((prefs.target_scale - prefs.target_min)
+        +
+        prefs.target_gap
+        +
+        rand(
+            prefs.target_max
+            -
+            2 * prefs.target_gap
+        )) % prefs.target_max
+    );
+    
+    //}
+    
+    // place the target path in a new spot {
     target_path.setAttribute('transform', `
         translate(
             ${(rand(2)<1?-1:1) * (sceneW+rand(adjustW))},
             ${(rand(2)<1?-1:1) * (sceneH+rand(adjustH))}
         )
-        scale(${5 + rand(100)})
+        scale(${prefs.target_scale})
         rotate(${rand(500)})
     `);
+    //}
 
-    guess_path.setAttribute('transform', `rotate(${rand(500)})`);
+    // rotate the guess path if not a heart {
+    guess_path.setAttribute('transform', `rotate(${
+        Shapes.currIndex === 0 ? (
+         (rand(2)<1?-1:1) * (8 + rand(25))
+        ) : rand(500)
+    })`);
+    //}
 
-    if (!prefs.proprLock) Triangle.randPropr();
+    // pick a random proportion if not locked {
+    if (!prefs.proprLock) Proprs.randItem;
 
+    // hide all the proportions
     [...propr_group.children, ...propr_butt_group.children]
     .forEach(v => {
         v.classList.remove('show');
         v.classList.remove('fade');
     });
+    //}
 
-    propr_group.children[Triangle.curPropr].classList.add('show');
+    // set the proportion value as a number
+    prefs.target_propr = [0.5,1,2,3][Proprs.currIndex];
     
-    propr_butt_group.children[Triangle.curPropr].classList.add('show');
+    // display the current proportion
+    [propr_group, propr_butt_group].forEach(v => {
+        v.children[Proprs.currIndex].classList.add('show');
+    });
+    
+    // reset the stats screen
+    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
 
+    // gradually fade the color
     D.body.style.setProperty('--nose-h', (prefs.hue += 7));
 
 });
 
 //}
-    
-// shape button {
+
+// handel shape button {
 
 // choke double clicks on the shape itself
 EDBL(shape_path);
 
 // change shape on click of shape itself
 shape_path.addEventListener('click', () => {
+    
+    // if locked, just skip out
     if (prefs.shapeLock) return;
-    Triangle.nextShape();
+    
+    // otherwise get the next shape
+    Shapes.nextItem;
+    
+    // set every path to that shape
     [target_path, guess_path, shape_path].forEach(v => {
-        v.setAttribute('d', Triangle.curShape);
+        v.setAttribute('d', Shapes.currItem);
     });
 
+    // update the statlines
+    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
+    
+    // fade the color
     D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-
+    
+    
 });
 
 // lock shape on double click in button area
@@ -716,11 +900,11 @@ shape_butt.addEventListener('dblclick', e => {
     e.preventDefault();
     prefs.shapeLock = !prefs.shapeLock;
     
-    sub_shape_pattern.setAttribute('fill',
+    sub_shape_pattern.style.setProperty('fill',
         prefs.shapeLock ? 'var(--whiteness)':'var(--midness)'
     );
     
-    ['start', 'mid', 'end'].forEach(v => {
+    ['start', 'mid'].forEach(v => {
         shape_path.setAttribute('marker-' + v,
             prefs.shapeLock ? 'url(#lockmark)' : 'none'
         );
@@ -730,13 +914,12 @@ shape_butt.addEventListener('dblclick', e => {
 
 //}
 
-// propr button {
-
+// handel propr button {
 
 // choke double clicks on the propr numbers and group
 [...propr_butt_group.children, propr_butt_group].forEach(v => EDBL(v));
 
-// change propr on click {
+// change propr on click of propr group
 propr_butt_group.addEventListener('click', e => {
     
     e.stopPropagation();
@@ -744,34 +927,54 @@ propr_butt_group.addEventListener('click', e => {
     
     if (prefs.proprLock) return;
 
-    Triangle.nextPropr();
+    Proprs.nextItem;
 
     [...propr_group.children, ...propr_butt_group.children].forEach(v => {
         v.classList.remove('show');
         v.classList.remove('fade');
     });
 
-    propr_group.children[Triangle.curPropr].classList.add('show');
-    propr_butt_group.children[Triangle.curPropr].classList.add('show');
+    [propr_group, propr_butt_group].forEach(v => {
+        v.children[Proprs.currIndex].classList.add('show');
+    });
+
+    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
 
     D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-
+    
 });
 
 // lock propr on doubleclick of butt area
-proprButt.addEventListener('dblclick', e => {
+propr_butt.addEventListener('dblclick', e => {
     
     e.stopPropagation();
     e.preventDefault();
     prefs.proprLock = !prefs.proprLock;
     
-    sub_propr_pattern.setAttribute('fill',
+    sub_propr_pattern.style.setProperty('fill',
         prefs.proprLock ? 'var(--whiteness)':'var(--midness)'
     );
+    [...propr_butt_group.children].forEach(v => {
+        
+        ['start'].forEach(type => {
+        
+            v.setAttribute('marker-' + type,
+                prefs.proprLock ? 'url(#lockmark)' : 'none'
+            );
+        });
+        
+    });
     
 },{ passive: false });
 
 //}
+
+// method to reset stats screen {
+
+const resetStatScreen = v => {
+    stat_line.setAttribute('d', v.makeStatLine());
+    ave_line.setAttribute('d', v.makeAveLine());
+}
 
 //}
 
@@ -786,6 +989,7 @@ WAL('dblclick', e => {
 
     guess_path.dispatchEvent(new Event('click'));
     
+    // !! DEBUGG !!
     //D.body.requestFullscreen().then((...x) => {
         
         D.body.style.width = '100vw';
@@ -807,7 +1011,7 @@ WAL('dblclick', e => {
 
 //}
 
-// throttled re-set init vals {
+// debounce re-set init vals {
 
 let adjustW;
 let adjustH;
@@ -825,14 +1029,178 @@ const resetVals = () => {
 }
 resetVals();
 
-let resizeThrottle;
-
-WAL('resize', e => {
-    clearTimeout(resizeThrottle);
-    resizeThrottle = setTimeout(resetVals, 300);
-});
+WAL('resize', DB(resetVals, 100));
     
 //}
+
+// scale guess on scene touches {
+
+let M = 0;
+
+scene.addEventListener('touchstart', e => M = e.touches[0].pageX);
+
+scene.addEventListener('touchmove', e => {
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    prefs.guess_actually_attempted = true;
+    
+    prefs.guess = G(
+        prefs.guess - (
+            (M-e.touches[0].pageX)
+            /
+            (e.touches[1] ? 300 : 40)
+        ),
+        5, 200
+    );
+    
+    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
+    
+}, { passive: false });
+
+//}
+
+// scale guess on scene wheels {
+
+scene.addEventListener('wheel', e => {
+    
+    e.stopPropagation();
+    e.preventDefault();
+    
+    prefs.guess_actually_attempted = true;
+    
+    prefs.guess = G(
+        prefs.guess - (
+            (M-e.deltaX)
+            /
+            (e.ctrlKey ? 300 : 40)
+        ),
+        5, 200
+    );
+    
+    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
+    
+    
+}, { passive: false });
+
+//}
+
+// scale guess on arrow keys {
+    
+D.addEventListener('keydown', e => {
+    
+    if (e.key === 'Enter') {
+        guess_path.dispatchEvent(new Event('click'));
+        return;
+    }
+    
+    prefs.guess_actually_attempted = true;
+    
+    prefs.guess = G (
+        (prefs.guess + (
+        (e.key === 'ArrowRight' || e.key === 'l') ?  1 :
+        (e.key === 'ArrowLeft'  || e.key === 'j') ? -1 :
+        0) * (e.ctrlKey ? 2 : 10)),
+        5, 200
+    );
+    
+    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
+   
+}, { passive: false });
+
+//}
+
+// store prefs function {
+const storePrefs = () => {
+    localStorage.setItem(appName, JSON.stringify(prefs));
+};
+//}
+
+// call store prefs on unload {
+WAL('beforeunload', () => {
+    storePrefs();
+});
+//}
+
+//////////////////////////////////////////////////
+
+// !! DEBUGG !!
+// fake stat generator {
+/*
+const fakeStats = () => {
+    
+    let ave = [];
+    
+    stat_line.setAttribute('d', 'M'+
+        [...new Array(11).fill(0)].map((v,i) => {
+            
+            ave.push(-10 + rand(20));
+            return `${i * 5} ${ave.at(-1)}`;
+            
+        }).join(' ')
+    );
+    
+    let yyy = (ave.reduce((a,v) => a + v, 0) / ave.length);
+    
+    ave_line.setAttribute('d',
+        `M0 ${yyy} 50 ${yyy}`
+    );
+    
+};
+fakeStats();
+*/
+//}
+
+// !! DEBUGG !!
+// path transforming function {
+/*
+let shift_paths = [
+"M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z"
+];
+    
+shift_paths = shift_paths.map(path => {
+    
+    // split on letter
+    let lines = path.trim().split(/([A-Z])/);
+    
+    // loop through each of those
+    lines = lines.map(line => {
+        
+        // split those up on the space
+        let part = line.trim().split(' ');
+        
+        // if it actually has values
+        if (part.length > 1) {
+            
+            // loop through those
+            part = part.map((coord, i) => {
+                
+                
+                // if index is even, change by y value
+                if (i%2 === 0) {
+                    return coord = Number(coord) -20;
+                    
+                } else { // else change by x value
+                    return coord = Number(coord) -25;
+                }
+                
+            });
+            
+            return part;
+        } else {
+            return line;
+        }
+    });
+    
+    return lines.flat().join(' ').trim();
+});
+
+//log(paths);
+*/
+//}
+
+
 
 })})() === undefined || console.log('exp!red');
 </script>
