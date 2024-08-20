@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>full-scream</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: grey;
+            overflow: hidden;
+            overscroll-behavior: none;
+            user-select: none;
+        }
+        
+        body[data-vars] {
+            --trans-dur: 500ms;
+        }
+
+        #main-svg, #over-div {
+            position: absolute;
+            margin: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+            transition: left var(--trans-dur);
+        }
+        
+        #main-svg {
+            background: blue;
+        }
+
+        #over-div {
+            left: 100%;
+            background: rgba(255, 0, 0, 0.7);
+        }
+
+        #over-div.show {
+            left: 0;
+        }
+        
+    </style>
+</head>
+<body data-vars>
+    
+    <svg id="main-svg"
+     viewBox="-25 -25 50 50"
+     preserveAspectRatio="xMaxYMid"
+    >
+        <circle cx="0" cy="0" r="2" fill="green" />
+    </svg>
+    <div id="over-div">[STATS]</div>
+    
+    <script>
+        // !! DEBUGG !!
+        const log = console.log;
+        
+        const D = document;
+        let sceneW = 0;
+        let sceneH = 0;
+        const mainSVG = D.getElementById('main-svg');
+        const overDiv = D.getElementById('over-div');
+        
+        const Liz = (v, ...r) => v.addEventListener(...r);
+        
+        const Kill = (v, t) => Liz(v, t, e => {
+            e.stopPropagation();
+            e.preventDefault();
+        }, { passive: false });
+        
+        const dBounce = (f, p=100) => {
+            let t;
+            return (...v) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => f(...v), p);
+                }
+        };
+        
+        const setSize = () => {
+            sceneW = mainSVG.clientWidth;
+            sceneH = mainSVG.clientHeight;
+        }
+        
+        const togStat = () => overDiv.classList.toggle('show');
+        
+        const reqFull = () => {
+            
+            D.documentElement.requestFullscreen();
+            D.addEventListener('dblclick', togStat);
+            
+        };
+        
+        setSize();
+        
+        Kill(D, 'touchmove');
+        
+        Liz(D, 'dblclick', reqFull,{ once: true });
+        
+        Liz(D, 'fullscreenchange', e => {
+            if (!D.fullscreenElement) {
+                D.removeEventListener('dblclick', togStat);
+                D.addEventListener('dblclick',reqFull,{once:true});
+            }
+        });
+        
+        Liz(window, 'resize', dBounce(setSize));
+        
+    </script>
+</body>
+</html>
