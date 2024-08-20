@@ -63,6 +63,7 @@ body {
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
+    user-select: none;
     
 }
 
@@ -136,7 +137,6 @@ circle {
     justify-content: center;
     left: 0%;
     background-color: var(--blackness);
-    user-select: none;
     transition: left linear var(--trans-dur);
 }
 
@@ -179,7 +179,6 @@ circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    user-select: none;
 }
 
 #scene > div, #scene > svg {
@@ -217,7 +216,6 @@ circle {
     justify-content: center;
     background-color: var(--greyness);
     transition: left linear var(--trans-dur);
-    user-select: none;
 }
 
 #stats div {
@@ -496,12 +494,9 @@ WAL = (...v) => W.addEventListener(...v),
 EDBL = v => v.addEventListener('dblclick', e => {
     e.stopPropagation(); e.preventDefault();
 }, { passive: false }),
-DB = (f, p) => {
-    let t;
-    return (...v) => {
+DB = (f, p, t) => (...v) => {
         clearTimeout(t);
         t = setTimeout(() => f(...v), p);
-    };
 },
 NS = (
     v, p={}, obj=D.createElementNS('http://www.w3.org/2000/svg', v)
@@ -605,10 +600,10 @@ const Proprs = new Xarray (
     
     // one/half (1/2)
     //`M 5 -21 Q -4 -1 -9 20 L -12 15 Q -4 -5 1 -24 L 1 -24 Z   M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z   M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z`,
-    `M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z  M 3 -24 L 8 -19.4 L -10 20 L -14.3 15 Z  M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z`,
+    `M -20 -16 L -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 Z M 3 -24 L 8 -19.4 L -10 20 L -14.3 15 Z  M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z`,
     
     // one (1)
-    `M -8 -6 L -13 -13 Q -7.5 -20 0 -25 L 7 -17 Q 5.5 0  6 10.5 L 11 11 L 10 25 L -10 25 L -11 12 L -6.25 11 L -6 -8 Z`,
+    `M -13 -13 Q -7.5 -20 0 -25 L 7 -17 Q 5.5 0  6 10.5 L 11 11 L 10 25 L -10 25 L -11 12 L -6.25 11 L -6 -8 L -8 -6 Z`,
     
     // two (2)
     `M -20 -15 C 10 -42 40 -5 0 10 L 20 10 L 18 25 L -18 25 L -20 10 C -10 10 7 2 3 -3 C -1 -6 -8 0 -10 2 Z`,
@@ -761,8 +756,8 @@ Proprs.forEach(propr => {
         
         g.append(NS('path',{
             
-            d:`M -20 -25Z ${propr} M20 25Z`
-          //d: propr
+          //d:`M -20 -25Z ${propr} M20 25Z`
+            d: propr
             
         }));
         
