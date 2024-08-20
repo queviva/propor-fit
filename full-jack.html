@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>full-scream</title>
-    <style>
+    <title>full-jack-city</title>
+    <!--style>
         * {
             box-sizing: border-box;
         }
@@ -19,10 +19,11 @@
         }
         
         body[data-vars] {
-            --trans-dur: 500ms;
+            --trans-dur: 800ms;
         }
 
-        #main-svg, #over-div {
+        body > div, body > svg {
+            
             position: absolute;
             margin: 10px;
             width: calc(100% - 20px);
@@ -32,47 +33,126 @@
             align-items: center;
             font-size: 2rem;
             color: white;
-            transition: left var(--trans-dur);
+            transition: left ease-out var(--trans-dur);
+            overflow: hidden;
+            overscroll-behavior: none;
+            scroll: none;
         }
         
-        #main-svg {
-            background: blue;
+        #scene-svg {
+            background-color: hsl(0, 70%, 50%);
         }
 
-        #over-div {
+        #nitro-div {
             left: 100%;
-            background: rgba(255, 0, 0, 0.7);
+            background-color: hsl(40, 80%, 50%);
+            border: 2px solid;
+            transition: left linear var(--trans-dur);
         }
-
-        #over-div.show {
+        
+        #nitro-div.show {
+            left: 0;
+            transition: left linear 20ms;
+        }
+        
+        #stats-div {
+            left: 100%;
+            background-color: hsl(180, 80%, 50%);
+        }
+        
+        #stats-div.show {
             left: 0;
         }
         
-    </style>
+    </style-->
+<style id="kathyStyles">
+* {
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: grey;
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+}
+
+body[data-vars] {
+    --trans-dur: 800ms;
+}
+
+body > div, body > svg {
+    position: absolute;
+    margin: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: white;
+    transition: left var(--trans-dur);
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+#scene-svg {
+    background-color: hsl(0, 70%, 50%);
+}
+
+#nitro-div {
+    left: 100%;
+    background-color: hsl(40, 80%, 50%);
+    border: 2px solid;
+}
+
+#nitro-div.show {
+    left: 0;
+    transition: left 20ms;
+}
+
+#stats-div {
+    left: 100%;
+    background-color: hsl(180, 80%, 50%);
+}
+
+#stats-div.show {
+    left: 0;
+}
+
+</style>
 </head>
 <body data-vars>
     
-    <svg id="main-svg"
+    <svg id="scene-svg"
      viewBox="-25 -25 50 50"
      preserveAspectRatio="xMaxYMid"
     >
         <circle cx="0" cy="0" r="2" fill="green" />
     </svg>
-    <div id="over-div">[STATS]</div>
+    <div id="nitro-div" class="show">double click to begin</div>
+    <div id="stats-div">[STATS]</div>
     
-    <script>
+</body>
+<script>
+    
+(() => document.addEventListener('DOMContentLoaded', () => {
+    
         // !! DEBUGG !!
         const log = console.log;
         
-        const D = document;
+        const doc = document;
         let sceneW = 0;
         let sceneH = 0;
-        const mainSVG = D.getElementById('main-svg');
-        const overDiv = D.getElementById('over-div');
+        const sceneSVG = doc.getElementById('scene-svg');
+        const statsDiv = doc.getElementById('stats-div');
+        const nitroDiv = doc.getElementById('nitro-div');
         
-        const Liz = (v, ...r) => v.addEventListener(...r);
+        const liz = (v, ...r) => v.addEventListener(...r);
         
-        const Kill = (v, t) => Liz(v, t, e => {
+        const kill = (v, t) => liz(v, t, e => {
             e.stopPropagation();
             e.preventDefault();
         }, { passive: false });
@@ -86,34 +166,37 @@
         };
         
         const setSize = () => {
-            sceneW = mainSVG.clientWidth;
-            sceneH = mainSVG.clientHeight;
+            sceneW = sceneSVG.clientWidth;
+            sceneH = sceneSVG.clientHeight;
         }
         
-        const togStat = () => overDiv.classList.toggle('show');
+        const togStat = () => statsDiv.classList.toggle('show');
         
         const reqFull = () => {
             
-            D.documentElement.requestFullscreen();
-            D.addEventListener('dblclick', togStat);
+            doc.documentElement.requestFullscreen();
+            doc.addEventListener('dblclick', togStat);
+            nitroDiv.classList.remove('show');
             
         };
         
         setSize();
         
-        Kill(D, 'touchmove');
+        kill(doc, 'touchmove');
         
-        Liz(D, 'dblclick', reqFull,{ once: true });
+        liz(doc, 'dblclick', reqFull,{ once: true });
         
-        Liz(D, 'fullscreenchange', e => {
-            if (!D.fullscreenElement) {
-                D.removeEventListener('dblclick', togStat);
-                D.addEventListener('dblclick',reqFull,{once:true});
+        liz(doc, 'fullscreenchange', e => {
+            if (!doc.fullscreenElement) {
+                doc.removeEventListener('dblclick', togStat);
+                doc.addEventListener('dblclick',reqFull,{once:true});
+                nitroDiv.classList.add('show');
+                statsDiv.classList.remove('show');
             }
         });
         
-        Liz(window, 'resize', dBounce(setSize));
+        liz(window, 'resize', dBounce(setSize));
+}))();
         
     </script>
-</body>
 </html>
