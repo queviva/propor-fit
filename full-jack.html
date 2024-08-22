@@ -1,79 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>full-jack-city</title>
-    <!--style>
-        * {
-            box-sizing: border-box;
-        }
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background: grey;
-            overflow: hidden;
-            overscroll-behavior: none;
-            user-select: none;
-        }
-        
-        body[data-vars] {
-            --trans-dur: 800ms;
-        }
 
-        body > div, body > svg {
-            
-            position: absolute;
-            margin: 10px;
-            width: calc(100% - 20px);
-            height: calc(100% - 20px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            color: white;
-            transition: left ease-out var(--trans-dur);
-            overflow: hidden;
-            overscroll-behavior: none;
-            scroll: none;
-        }
-        
-        #scene-svg {
-            background-color: hsl(0, 70%, 50%);
-        }
+<head><title>full-jack-city</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style id="boddyStyles">
 
-        #nitro-div {
-            left: 100%;
-            background-color: hsl(40, 80%, 50%);
-            border: 2px solid;
-            transition: left linear var(--trans-dur);
-        }
-        
-        #nitro-div.show {
-            left: 0;
-            transition: left linear 20ms;
-        }
-        
-        #stats-div {
-            left: 100%;
-            background-color: hsl(180, 80%, 50%);
-        }
-        
-        #stats-div.show {
-            left: 0;
-        }
-        
-    </style-->
-<style id="kathyStyles">
 * {
     box-sizing: border-box;
 }
+
+@font-face {
+    font-family : luckiest;
+    src : url(luckiest.ttf);
+}
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: grey;
+    background: var(--blackness);
+    color: var(--whiteness);
     overflow: hidden;
     overscroll-behavior: none;
     user-select: none;
@@ -81,122 +29,497 @@ html, body {
 
 body[data-vars] {
     --trans-dur: 800ms;
+    --hue: 350;
+    --whiteness : hsl(
+        var(--hue),
+        100%,
+        98%
+    );
+    --lightness: hsl(
+        var(--hue),
+        100%,
+        88%
+    );
+    --midness: hsl(
+        var(--hue),
+        100%,
+        70%
+    );
+    --midness-x: hsl(
+        var(--hue),
+        100%,
+        70%,
+        0.4
+    );
+    --darkness: hsl(
+        var(--hue),
+        100%,
+        25%
+    );
+    --blackness: hsl(
+        var(--hue),
+        70%,
+        5%
+    );
+    --greyness: hsl(
+        var(--hue),
+        0%,
+        50%
+    );
 }
 
-body > div, body > svg {
+/*
+body * { --bord: #000; border : 5px solid var(--bord); }
+body > * { --bord: red; }
+body > * > * { --bord: green; }
+body > * > * > * { --bord: orange; }
+body > * > * > * > * { --bord: purple; }
+body > * > * > * > * > * { --bord: blue; }
+*/
+
+div {
     position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+    transition: left ease-out var(--trans-dur);
+}
+
+img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    object-fit: contain;
+}
+
+em {
+    font-family: luckiest;
+    font-weight: bold;
+    font-size: 30px;
+    text-align: center;
+    color: var(--darkness);
+    -webkit-text-stroke: 1px var(--lightness);
+}
+
+[data-port] { display: none; }
+
+[data-land] { display: none; }
+
+@media screen and (orientation: portrait) {
+    [data-port] { display: inline-block; }
+}
+
+@media screen and (orientation: landscape) {
+    [data-land] { display: inline-block; }
+}
+
+</style>
+<style id="frameStyles">
+
+#frame {
     margin: 10px;
     width: calc(100% - 20px);
     height: calc(100% - 20px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    color: white;
-    transition: left var(--trans-dur);
-    overflow: hidden;
-    overscroll-behavior: none;
 }
 
-#scene-svg {
-    background-color: hsl(0, 70%, 50%);
-}
+</style>
+<style id="nitroStyles">
 
-#nitro-div {
+#nitro {
     left: 100%;
-    background-color: hsl(40, 80%, 50%);
-    border: 2px solid;
+    font-family: luckiest;
+    background-color: var(--midness);
+    transition-delay: 400ms;
 }
 
-#nitro-div.show {
-    left: 0;
-    transition: left 20ms;
+#nitro.show {
+    left: 0%;
+    transition-delay: 0ms;
+    --trans-dur: 0;
 }
 
-#stats-div {
+</style>
+<style id="otherStyles">
+
+#other {
+    background-color: var(--greyness);
     left: 100%;
-    background-color: hsl(180, 80%, 50%);
 }
 
-#stats-div.show {
-    left: 0;
+#other.show {
+    left: 0%;
+}
+
+</style>
+<style id="sceneStyles">
+#scene {
+    background-color: var(--darkness);
+}
+</style>
+<style id="xSVGxStyles">
+
+svg {
+    width: 100px;
+    height: 100px;
+    overflow: visible;
+}
+
+path {
+    vector-effect: non-scaling-stroke;
+}
+
+</style>
+<style id="guessStyles">
+
+#guess_path {
+    fill: var(--midness-x);
+    stroke: var(--lightness);
+    stroke-width: 3px;
+    transition: all linear 400ms, transform linear 800ms;
+}
+
+#target_path {
+    fill: var(--midness);
+    stroke: var(--lightness);
+    stroke-width: 3px;
+    transition: all linear 400ms, transform linear 800ms;
 }
 
 </style>
 </head>
+
 <body data-vars>
-    
-    <svg id="scene-svg"
-     viewBox="-25 -25 50 50"
-     preserveAspectRatio="xMaxYMid"
-    >
-        <circle cx="0" cy="0" r="2" fill="green" />
-    </svg>
-    <div id="nitro-div" class="show">double click to begin</div>
-    <div id="stats-div">[STATS]</div>
-    
+    <div id="frame">
+        <div id="scene">
+            <svg id="svg01"
+             xmlns="http://www.w3.org/2000/svg"
+             viewBox="-50 -50 100 100"
+            >
+                <path id="target_path" />
+                <g id="guess_scale">
+                <path id="guess_path" />
+                </g>
+            </svg>
+        </div>
+        <div id="other">
+            <div>une</div>
+            <div>two</div>
+            <div>tre</div>
+        </div>
+        <div id="nitro" class="show">
+            <div><img src="abe.png"></div>
+            <div><em>double lick</em></div>
+        </div>
+    </div>
 </body>
+
 <script>
+//////////////////////////////////////////////////
+// pizzaface MCMLXXXVIII                   {
+//
+// !! DEBUGG !!
+'use strict';
+const log = console.log;
+localStorage.clear();
+/////////////////////////////////////////////////}
     
 (() => document.addEventListener('DOMContentLoaded', () => {
+
+    // preferences {
     
-        // !! DEBUGG !!
-        const log = console.log;
+    const defPrefs = {
+        appName : 'rat-master',
+        guess  : { val: 50, min: 5, max: 300 },
+        target : { val: 20, min: 18, max: 80 },
+        stats : []
+    }
+
+    const prefs = Object.assign({}, defPrefs,
+        JSON.parse(localStorage[defPrefs.appName] || '{}')
+    );
+
+    //}
+
+    // utils {
+
+    const doc = document;
+    const byID = v => doc.getElementById(v);
+    
+    const gate = (...v) => v.sort((a, b) => a - b)[1];
+    const rand = v => ~~(crypto.getRandomValues(new Uint32Array(1))[0] / 2**32 * v);
+    const randGap = (min, max, gap) => v => min + ((v - min) + gap + rand(max - 2 * gap)) % (max - min);
+    
+    const lizz = (v, ...r) => v.addEventListener(...r);
+    const lizX = (v, ...r) => v.removeEventListener(...r);
+    const kill = (v, t) => lizz(v, t, e => {
+        e.stopPropagation(); e.preventDefault();
+    }, { passive: false });
+    const debounce = (f, p = 100, t) => (...v) => {
+        clearTimeout(t); t = setTimeout(() => f(...v), p);
+    };
+    
+    
+    //}
+
+    // vars {
+
+    const sceneDiv = byID('scene');
+    const sceneSVG = byID('svg01');
+    const otherDiv = byID('other');
+    const nitroDiv = byID('nitro');
+    const guessPath = byID('guess_path');
+    const guessScale = byID('guess_scale');
+    const targetPath = byID('target_path');
+    
+    let sceneW = 0;
+    let sceneH = 0;
+    let touchX = 0;
+
+    //}
+
+    // app methods {
+    
+    const setSize = () => {
+
+        let bbox = frame.getBoundingClientRect();
+
+        sceneW = bbox.width  / 2;
+        sceneH = bbox.height / 2;
         
-        const doc = document;
-        let sceneW = 0;
-        let sceneH = 0;
-        const sceneSVG = doc.getElementById('scene-svg');
-        const statsDiv = doc.getElementById('stats-div');
-        const nitroDiv = doc.getElementById('nitro-div');
+        size.update;
+        alterTarget();
         
-        const liz = (v, ...r) => v.addEventListener(...r);
+    };
+    
+    const togOther = () => {
+        otherDiv.classList.toggle('show');
+    };
+
+    const reqFull = () => {
+
+        doc.documentElement.requestFullscreen();
+        lizz(doc, 'dblclick', togOther);
+        nitroDiv.classList.remove('show');
+
+    };
+
+    const alterGuess = v => {
+
+        prefs.guess.val = gate(
+            prefs.guess.val + v, prefs.guess.min, prefs.guess.max
+        );
+
+        guessScale.setAttribute(
+            'transform', `scale(${prefs.guess.val})`
+        );
+
+    };
+ 
+    const alterTarget = () => {
         
-        const kill = (v, t) => liz(v, t, e => {
-            e.stopPropagation();
-            e.preventDefault();
-        }, { passive: false });
+        targetPath.setAttribute(
+            'transform',
+            `translate(
+                ${size.neg * size.x}
+                ${size.neg * size.y}
+            ) rotate(${size.o}) scale(${size.s})`
+        );
+    }
         
-        const dBounce = (f, p=100) => {
-            let t;
-            return (...v) => {
-                    clearTimeout(t);
-                    t = setTimeout(() => f(...v), p);
-                }
-        };
+    //}
+    
+    // size proxy {
+    
+    const size = new Proxy({
+        x:23, y:23, o:23, s:23,
+        rand: {},
+        neg: () => (rand(2)||-1),
+        update: t => t.rand = {
+            x: randGap(20, sceneW - 30, 10),
+            y: randGap(20, sceneH - 30, 10),
+            o: randGap(0, 500, 20),
+            s: randGap(prefs.target.min, prefs.target.max, 20)
+        },
+    },{ get (t, p) {
+        return (typeof t[p] === 'function') ?
+            t[p](t) : (t[p] = t.rand?.[p]?.(t[p]));
+    }});
+    
+    //}
+
+    // index tracking arrays {
+
+    class Xarray extends Array {
+
+        #arrayIndex = 0;
+
+        #updateIndex (v) {
         
-        const setSize = () => {
-            sceneW = sceneSVG.clientWidth;
-            sceneH = sceneSVG.clientHeight;
+            return this[(
+                this.#arrayIndex = this.#mod(this.#arrayIndex + (
+                    (v === 'rand' ? (1 + rand(this.length - 1)) : v)
+                ))
+            )];
+        
         }
-        
-        const togStat = () => statsDiv.classList.toggle('show');
-        
-        const reqFull = () => {
-            
-            doc.documentElement.requestFullscreen();
-            doc.addEventListener('dblclick', togStat);
-            nitroDiv.classList.remove('show');
-            
-        };
-        
-        setSize();
-        
-        kill(doc, 'touchmove');
-        
-        liz(doc, 'dblclick', reqFull,{ once: true });
-        
-        liz(doc, 'fullscreenchange', e => {
-            if (!doc.fullscreenElement) {
-                doc.removeEventListener('dblclick', togStat);
-                doc.addEventListener('dblclick',reqFull,{once:true});
-                nitroDiv.classList.add('show');
-                statsDiv.classList.remove('show');
+       
+        #mod (v, m=this.length) { return ((v % m) + m) % m; }
+
+        get currItem() { return this[this.#arrayIndex]; }
+        get nextItem() { return this.#updateIndex(1); }
+        get prevItem() { return this.#updateIndex(-1); }
+        get randItem() { return this.#updateIndex('rand'); }
+        get currIndex() { return this.#arrayIndex; }
+        set currItem (v=0) { return this.#arrayIndex = this.#mod(v); }
+
+    }
+
+    const Shapes = new Xarray(
+        //{
+
+        // heart
+        `M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
+
+        // triangle
+        `M 0 .625 L -1.083 .625 A 0 0  0 0 1  -1.083 .625 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 1.083 .625 A 0 0  0 0 1  1.083 .625 Z`,
+
+        // circle
+        `M 0 1 L 0 1 A 1 1  0 0 1  -1 0 L -1 0 A 1 1  0 0 1  0 -1 L 0 -1 L 0 -1 A 1 1  0 0 1  1 0 L 1 0 A 1 1  0 0 1  0 1 Z`,
+
+        // square
+        //`M 0 1 L -1 1 A 0 0  0 0 1  -1 1 L -1 -1 A 0 0  0 0 1  -1 -1 L 0 -1 L 1 -1 A 0 0  0 0 1  1 -1 L 1 1 A 0 0  0 0 1  1 1 Z`,
+
+        // hexaberg
+        `M 0 1 L -.866 .5 A 0 0  0 0 1  -.866 .5 L -.866 -.5 A 0 0  0 0 1  -.866 -.5 L 0 -1 L .866 -.5 A 0 0  0 0 1  .866 -.5 L .866 .5 A 0 0  0 0 1  .866 .5 Z`,
+
+        // rectangle
+        `M 0 1 L -1.414 1 A 0 0  0 0 1  -1.414 1 L -1.414 -1 A 0 0  0 0 1  -1.414 -1 L 0 -1 L 1.414 -1 A 0 0  0 0 1  1.414 -1 L 1.414 1 A 0 0  0 0 1  1.414 1 Z`
+        //}
+    );
+
+    //}
+
+    // full-screen on resize {
+
+    lizz(doc, 'dblclick', reqFull, { once: true });
+
+    lizz(doc, 'fullscreenchange', e => {
+        if (!doc.fullscreenElement) {
+            lizX(doc, 'dblclick', togOther);
+            lizz(doc, 'dblclick', reqFull, { once: true });
+            nitroDiv.classList.add('show');
+            otherDiv.classList.remove('show');
+        }
+    });
+
+    lizz(window, 'resize', debounce(setSize));
+
+    //}
+
+    // handel click on guess  {
+
+    kill(sceneSVG, 'dblclick');
+
+    const reFormShape = e => {
+        log('END THE _D_ !!!', e.target.id, e.propertyName);
+            if (guessPath.getAttribute('d') !== Shapes.currItem) {
+                guessPath.setAttribute('d', Shapes.currItem);
             }
-        });
+            if (targetPath.getAttribute('d') !== Shapes.currItem) {
+                targetPath.setAttribute('d', Shapes.currItem);
+            }
+    };
+    
+    lizz(sceneSVG, 'click', () => {
+
+        Shapes.randItem;
+        let xpath = `M 0 1 L -1 1 A 0 0  0 0 1  -1 1 L -1 -1 A 0 0  0 0 1  -1 -1 L 0 -1 L 1 -1 A 0 0  0 0 1  1 -1 L 1 1 A 0 0  0 0 1  1 1 Z`;
+        guessPath.setAttribute('d', xpath);
+        guessPath.setAttribute('transform', `rotate(${rand(500)})`);
         
-        liz(window, 'resize', dBounce(setSize));
+        targetPath.setAttribute('d', xpath);
+
+        alterTarget();
+        
+    });
+        lizz(guessPath, 'transitionend', reFormShape);
+
+
+    //}
+
+    // handel slide on scene {
+
+    lizz(scene, 'touchstart', e => touchX = e.touches[0].pageX);
+    kill(scene, 'touchmove');
+    lizz(scene, 'touchmove', e => {
+
+        alterGuess(-1 * (
+            (touchX - e.touches[0].pageX) /
+            (e.touches[1] ? 300 : 40)
+        ));
+
+    });
+
+    //}
+
+    // handel wheel on scene {
+    kill(scene, 'wheel');
+    lizz(scene, 'wheel', e => {
+
+        alterGuess(
+            (e.deltaX) /
+            (e.ctrlKey ? 300 : 40)
+        );
+
+    });
+
+    //}
+
+    // handel arrow on scene {
+
+    lizz(doc, 'keydown', e => {
+
+        if (e.key === 'Enter') {
+
+            if (e.ctrlKey) {
+                doc.dispatchEvent(new Event('dblclick'));
+            }
+            else {
+                sceneSVG.dispatchEvent(new Event('click'));
+            }
+            return;
+
+        }
+
+        alterGuess((
+            (e.key === 'ArrowRight' || e.key === 'l') ? 1 :
+            (e.key === 'ArrowLeft' || e.key === 'j') ? -1 :
+            0
+        ) * (e.ctrlKey ? 2 : 10));
+
+
+    }, { passive: false });
+
+    //}
+
+    // on init {
+
+    kill(doc, 'touchmove');
+    kill(targetPath, 'click');
+
+    setSize();
+    sceneSVG.dispatchEvent(new Event('click'));
+    alterGuess(prefs.guess.val);
+
+    //}
+
 }))();
-        
-    </script>
+</script>
+
 </html>
