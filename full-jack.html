@@ -145,11 +145,55 @@ path {
 }
 
 #nitro > div {
-    align-items: flex-end;
-    padding: 20px;
-    height: 100%;
-    width: 100%;
+    position: absolute;
+    display: block;
+    padding: 10px;
 }
+
+#nitro > .doublelick {
+    display: flex;
+    text-align: center;
+    color: var(--darkness);
+}
+
+#nitro > .directions {
+    top: 0;
+    font-family: georgia;
+    font-size: 12px;
+}
+
+@media screen and (orientation: portrait) {
+    
+    #nitro > .doublelick {
+        align-items: flex-end;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 20%;
+    }
+    
+    #nitro > .directions {
+        left: 0;
+    }
+    
+}
+
+@media screen and (orientation: landscape) {
+    
+    #nitro > .doublelick {
+        align-items: center;
+        right: 0;
+        width: 40%;
+        height: 100%;
+    }
+    
+    #nitro > .directions {
+        left: 0;
+        width: 38%;
+        height: 100%;
+    }
+}
+
 
 </style>
 <style id="statsStyles">
@@ -312,23 +356,41 @@ path.propr.fade {
     height: 100px;
     width: 100px;
 }
+
+#chart .stdLine {
+    fill: var(--midness-x);
+    stroke-width: 0;
+    stroke: var(--darkness);
+    transform: scale(1, 0);
+    transition: all linear var(--trans-dur);
+}
+
+#chart .stdLine.show {
+    transform: scale(1, 1);
+}
     
-#chart > svg > path:nth-of-type(1) {
+#chart .midLine {
     fill: none;
     stroke-width: 1px;
     stroke: var(--whiteness);
 }
 
-#chart > svg > path:nth-of-type(2) {
+#chart .aveLine {
     fill: none;
     stroke-width: 1px;
     stroke: var(--midness);
 }
     
-#chart > svg > path:nth-of-type(3) {
+#chart .valLine{
     fill: none;
     stroke-width: 3px;
     stroke: var(--darkness);
+}
+
+#chart .maxLine {
+    fill: none;
+    stroke-width: 5px;
+    stroke: hsl(var(--hue),0%,40%);
 }
 
 </style>
@@ -349,6 +411,8 @@ path.propr.fade {
                     <path/>
                     <path/>
                     <path/>
+                    <path/>
+                    <path/>
                 </svg>
             </div>
             <div>
@@ -364,8 +428,28 @@ path.propr.fade {
             <svg viewBox="0 0 150 200">
                 <use href="abe.svg#ikon"/>
             </svg>
-            <div>
-                <em>double lick <br data-port>to being</em>
+            <div class="directions">
+                slide left-and-right to resize the
+                middle shape until you think it
+                represents the given size
+                of the other shape
+                <br><br>
+                click on the middle shape to submit
+                and generate a new shape
+                <br><br>
+                keep doing this over and over
+                <br><br>
+                if you click without resizing, that turn
+                will skip; try to make an attempt even if
+                the other shape is partly off the screen
+            </div>
+            <div class="doublelick">
+                <div>
+                <em>double lick<br>to begin</em>
+                <br><br>
+                [also to toggle stats]<br>
+                <br><br>
+                </div>
             </div>
         </div>
     </div>
@@ -386,7 +470,7 @@ localStorage.clear();
     // preferences {
     
     const defPrefs = {
-        appName : 'rat-master',
+        appName : 'propr-fit',
         guess  : { val: 50, min: 5, max: 300 },
         target : { val: 20, min: 18, max: 80 },
         stats : [],
@@ -412,7 +496,7 @@ localStorage.clear();
     
     const gate = (...v) => v.sort((a, b) => a - b)[1];
     const rand = v => ~~(crypto.getRandomValues(new Uint32Array(1))[0] / 2**32 * v);
-    const randSkip = (min, max, gap) => v => min + ((v - min) + gap + rand(max - 2 * gap)) % (max - min);
+    const randSkip = (min, max, skip) => v => min + ((v - min) + skip + rand(max - 2 * skip)) % (max - min);
     
     const lizz = (v, ...r) => v.addEventListener(...r);
     const lizX = (v, ...r) => v.removeEventListener(...r);
@@ -432,25 +516,29 @@ localStorage.clear();
     const sceneDiv = byID('scene');
     const sceneSVG = sceneDiv.children[0];
     
-    
-    const proprGroup = sceneSVG.children[1];
     const targetGroup = sceneSVG.children[0];
     const targetPath = targetGroup.children[0];
+    const proprGroup = sceneSVG.children[1];
     const guessGroup = sceneSVG.children[2];
     const guessPath = guessGroup.children[0];
-    
     
     const shapeButt = byID('shape_butt');
     const shapeButtSVG = shapeButt.children[0];
     const shapeButtPath = shapeButtSVG.children[0];
     const proprButt = byID('propr_butt');
     const proprButtSVG = proprButt.children[0];
+    
     const chartDiv = byID('chart');
     const chartSVG = chartDiv.children[0];
-    const midLine = chartSVG.children[0];
-    const aveLine = chartSVG.children[1];
-    const statLine = chartSVG.children[2];
+    const stdLine = chartSVG.children[0];
+    const midLine = chartSVG.children[1];
+    const aveLine = chartSVG.children[2];
+    const valLine = chartSVG.children[3];
+    const maxLine = chartSVG.children[4];
     
+    'stdmidavevalmax'.match(/.../g).forEach((v, i) => {
+        chartSVG.children[i].classList.add(`${v}Line`);
+    });
     
     let sceneW = 0;
     let sceneH = 0;
@@ -467,8 +555,6 @@ localStorage.clear();
     
     const setSize = () => {
 
-        log('set size run');
-        
         let bbox = frame.getBoundingClientRect();
 
         sceneW = bbox.width  / 2;
@@ -519,8 +605,11 @@ localStorage.clear();
         
         guessPath.setAttribute('transform',
             `rotate(${
-                shapes.currIndex === 0 ?
-                size.h : size.o2
+                // no hearts
+                size.o2
+                // yes hearts
+                //shapes.currIndex === 0 ?
+                //size.h : size.o2
             })`
         );
 
@@ -541,15 +630,13 @@ localStorage.clear();
     
     const drawChart = (v=dude) => {
     
-        midLine.setAttribute('d', `M${-chartW} 0 ${chartW} 0`);
+        let p = proprs.currVal;
         
-        aveLine.setAttribute('d', v.makeAveLine(
-            [0.5, 1, 2, 3][proprs.currIndex]
-        ));
-    
-        statLine.setAttribute('d', v.makeStatLine(
-            [0.5, 1, 2, 3][proprs.currIndex]
-        ));
+        stdLine.setAttribute('d', v.makeStdLine(p));
+        midLine.setAttribute('d', v.makeMidLine(p));
+        aveLine.setAttribute('d', v.makeAveLine(p));
+        valLine.setAttribute('d', v.makeValLine(p));
+        maxLine.setAttribute('d', v.makeMaxLine(p));
         
     };
     
@@ -634,7 +721,7 @@ localStorage.clear();
         //{
 
         // heart
-        `M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
+        //`M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
 
         // triangle
         `M 0 .625 L -1.083 .625 A 0 0  0 0 1  -1.083 .625 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 1.083 .625 A 0 0  0 0 1  1.083 .625 Z`,
@@ -677,6 +764,7 @@ localStorage.clear();
         
         get currSceneObj() { return this.sceneObjs[this.currIndex]; }
         get currButtObj() { return this.buttonObjs[this.currIndex]; }
+        get currVal() { return [0.5, 1, 2, 3][this.currIndex]; }
         
     }(
         //{
@@ -707,62 +795,74 @@ localStorage.clear();
             if (v?.vals?.length) {
                 this.push(...v.vals);
             }
-            let { vals, ...rest } = v;
-            for (let i in rest) {
-                this[i] = v[i];
+            for (let i in v) {
+                if (i !== 'vals') this[i] = v[i];
             }
         }
     
         push(v) {
-    
-            // add the new value
             super.push(v);
-    
-            // increment the count
-            this.cnt++;
-    
-            // if the array is too short
-            if (this.length <= this.siz) {
-    
-                // if there is no average yet
-                if (this.ave == '') {
-    
-                    // then ave is just the current val
-                    this.ave = v;
-    
-                }
-                else {
-    
-                    // otherwise, average the array
-                    this.ave = this.reduce((a, b) => a + b, 0) / this.length;
-    
-                }
-    
-            } else { // array is long enough
-    
-                // remove the first entry
-                super.shift();
-    
-                // update the running average
-                this.ave = (((this.cnt - 1) * this.ave) + v) / this.cnt;
-    
-            }
-    
-            // update min/max
-            this.min = Math.min(...this, this.min);
-            this.max = Math.max(...this, this.max);
-    
+            this.#updateStats(
+                (this.length > this.siz ? this.shift() : null), v
+            );
             return this.serialize();
-    
+        }
+
+        #updateStats(oldValue, newValue) {
+            
+            // Update count
+            this.cnt++;
+        
+            // Update average
+            const oldAve = this.ave;
+            this.ave += (newValue - oldAve) / this.length;
+        
+            // Update minimum and maximum
+            if (newValue < this.min) this.min = newValue;
+            if (newValue > this.max) this.max = newValue;
+            
+            // Update M2 and standard deviation
+            let delta = newValue - oldAve;
+            let deltaOld = oldValue !== null ? oldValue - oldAve : 0;
+
+            this.M2 += delta * (newValue - this.ave) - deltaOld * (oldValue - this.ave);
+
+            this.std = Math.sqrt(this.M2 / this.length);
+            
         }
         
-        calcY (v, p) {
-            return v <= p ? chartH * (1 - (v/p)) :
-                   v <= 2*p ? - ((v/p - 1) * chartH/2) :
-                   -(chartH/2) * (2 - 1/(1.001)**(v-2*p))
+        calcY(v, p) {
+            return -chartH * (
+                v <= p ? ((v / p) - 1) :
+                v <= 5*p ? ((v - p) / (4*p) * 0.7) :
+                (1 - 0.3 / (1.5**(v - 5*p)))
+            );
         }
-    
-        makeStatLine(p) {
+        
+        makeStdLine(p) {
+            stdLine.setAttribute('transform-origin',`0 ${this.calcY(this.ave,p)}`);
+            return this.std === null ?
+                `M 0 0 0 0 0 0 0 0 Z` :
+                `M ${-chartW} ${this.calcY(this.ave+this.std, p)}
+                   ${ chartW} ${this.calcY(this.ave+this.std, p)}
+                   ${ chartW} ${this.calcY(this.ave-this.std, p)}
+                   ${-chartW} ${this.calcY(this.ave-this.std, p)}
+                 Z`;
+            
+        }
+        
+        makeMidLine(p) {
+            return `M${-chartW} 0 ${chartW} 0`;
+        }
+        
+        makeAveLine(p) {
+            return this.ave === null ?
+                `M 0 0 0 0` :
+                `M ${-chartW} ${this.calcY(this.ave, p)}
+                   ${ chartW} ${this.calcY(this.ave, p)}`;
+        }
+        
+        makeValLine(p) {
             return this.length === 0 ?
                 `M${new Array(this.siz).fill(`0 0`).join(' ')}` :
     
@@ -784,13 +884,13 @@ localStorage.clear();
 
         }
         
-        makeAveLine(p) {
-            return this.ave === '' ?
-                `M0 0 0 0` :
-                `M${-chartW} ${this.calcY(this.ave, p)}
-                  ${ chartW} ${this.calcY(this.ave, p)}`;
+        makeMaxLine(p) {
+            return this.length < 1 ?
+            `M ${-chartW} 0 ${-chartW} 0` :
+            `M ${-chartW} ${this.calcY(this.min, p)}
+               ${-chartW} ${this.calcY(this.max, p)}`;
         }
-    
+        
         serialize() {
             return JSON.stringify(
                 Object.assign({}, { vals: [...this] }, this)
@@ -809,7 +909,7 @@ localStorage.clear();
         if (!prefs.stats[i]) {
             prefs.stats[i] = [];
         }
-        if (prefs.stats[i]?.[j]) {
+        if (prefs.stats[i][j]) {
             return StatsArray.deserialize(prefs.stats[i][j]);
         }
         else {
@@ -817,11 +917,12 @@ localStorage.clear();
                 vals: [],
                 siz: prefs.stats_size,
                 cnt: 0,
-                ave: '',
-                min: '',
-                max: '',
-                std: '',
-                cov: ''
+                ave: null,
+                min: Infinity,
+                max: -Infinity,
+                std: null,
+                cov: 0,
+                M2: 0
             });
             prefs.stats[i][j] = tmp.serialize();
             return tmp;
@@ -859,8 +960,6 @@ localStorage.clear();
                 (prefs.guess.val**2 / prefs.target.val**2)
             );
            
-            log('guess: ', prefs.guess.val**2 / prefs.target.val**2)
-
             isActualAttempt = false;
             
         }
@@ -1006,13 +1105,26 @@ localStorage.clear();
     
     //}
     
+    // toggle standard deviation {
+    
+    lizz(aveLine, 'click', e => {
+        e.stopPropagation();
+        stdLine.classList.toggle('show');
+    });
+    
+    lizz(stdLine, 'click', e => {
+        e.stopPropagation();
+        stdLine.classList.remove('show');
+    });
+        
+    //}
+    
     // on init {
 
-    setDude(0,0);
+    setDude(0, 0);
     scaleGuess(0);
 
     //}
-    
     
 }))();
 </script>
