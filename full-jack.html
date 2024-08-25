@@ -460,8 +460,6 @@ localStorage.clear();
 
     let isActualAttempt;
     let dude;
-    const circ = NS('circle',{cx:0,cy:0,r:3});
-    chartSVG.append(circ);
     
     //}
 
@@ -469,6 +467,8 @@ localStorage.clear();
     
     const setSize = () => {
 
+        log('set size run');
+        
         let bbox = frame.getBoundingClientRect();
 
         sceneW = bbox.width  / 2;
@@ -480,7 +480,7 @@ localStorage.clear();
         bbox = chartDiv.getBoundingClientRect();
         
         chartW = (bbox.width  / 2) - 5;
-        chartH = (bbox.height / 2) - 20;
+        chartH = (bbox.height / 2) - 10;
         
         drawChart();
         
@@ -489,6 +489,7 @@ localStorage.clear();
     };
     
     const togStats = () => {
+        isActualAttempt = false;
         statsDiv.classList.toggle('show');
     };
 
@@ -497,6 +498,7 @@ localStorage.clear();
         doc.documentElement.requestFullscreen();
         lizz(doc, 'dblclick', togStats);
         nitroDiv.classList.remove('show');
+        setSize();
         sceneSVG.dispatchEvent(new Event('click'));
 
     };
@@ -551,6 +553,10 @@ localStorage.clear();
         
     };
     
+    const setDude = (a=proprs.currIndex, b=shapes.currIndex) => {
+        dude = allStats[a][b];
+    };
+    
     //}
     
     // size proxy {
@@ -584,9 +590,18 @@ localStorage.clear();
 
     class Xarray extends Array {
         
+        constructor (...v) {
+            super(...v);
+            lizz(this.lockedObj, 'dblclick', () => {
+                this.locked = false;
+                this.lockedObj.remove();
+            });
+        }
+        
         #arrayIndex = 0;
         
         locked = false;
+        
         lockedObj = NS('path', {
             d: `M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
             ['class'] : 'lockedObj'
@@ -742,13 +757,12 @@ localStorage.clear();
         }
         
         calcY (v, p) {
-            return v <= p ? sceneH * (1 - (v/p)) :
-                   v <= 2*p ? - ((v/p - 1) * sceneH/2) :
-                   -(sceneH/2) * (2 - 1/2**(v-2*p))
+            return v <= p ? chartH * (1 - (v/p)) :
+                   v <= 2*p ? - ((v/p - 1) * chartH/2) :
+                   -(chartH/2) * (2 - 1/(1.001)**(v-2*p))
         }
     
         makeStatLine(p) {
-            log('lenght in makeStat', this.length);
             return this.length === 0 ?
                 `M${new Array(this.siz).fill(`0 0`).join(' ')}` :
     
@@ -771,11 +785,6 @@ localStorage.clear();
         }
         
         makeAveLine(p) {
-            log('ave is', this.ave);
-            circ.setAttribute('cy',
-                this.ave === '' ? 0 :
-                this.calcY(this.ave, p)
-            );
             return this.ave === '' ?
                 `M0 0 0 0` :
                 `M${-chartW} ${this.calcY(this.ave, p)}
@@ -872,8 +881,8 @@ localStorage.clear();
         });
         setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
         
-        dude = allStats[proprs.currIndex][shapes.currIndex];
-        drawChart(dude);
+        setDude()
+        drawChart();
         
     });
 
@@ -943,9 +952,13 @@ localStorage.clear();
     kill(shapeButtSVG, 'dblclick');
     lizz(shapeButtSVG, 'click', () => {
         
-        shapeButtPath.setAttribute('d', shapes.nextItem);
-        guessPath.setAttribute('d', shapes.currItem);
-        targetPath.setAttribute('d', shapes.currItem);
+        shapes.nextItem;
+        [shapeButtPath, guessPath, targetPath].forEach(v => {
+            v.setAttribute('d', shapes.currItem);
+        });
+        
+        setDude();
+        drawChart();
         
         isActualAttempt = false;
         
@@ -976,6 +989,9 @@ localStorage.clear();
         setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
         proprs.currButtObj.classList.add('show');
         
+        setDude();
+        drawChart();
+        
         isActualAttempt = false;
         
     });
@@ -992,9 +1008,8 @@ localStorage.clear();
     
     // on init {
 
-    dude = allStats[0][0];
+    setDude(0,0);
     scaleGuess(0);
-    setSize();
 
     //}
     
