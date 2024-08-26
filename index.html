@@ -1,17 +1,45 @@
-<!doctype html><html lang="en">
-<head><title>propr fit</title>
+<!DOCTYPE html>
+<html lang="en">
+
+<head><title>full-jack-city</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <style id="boddyStyles">
+
+* {
+    box-sizing: border-box;
+}
 
 @font-face {
     font-family : luckiest;
     src : url(luckiest.ttf);
 }
-    
-* {
-    box-sizing: border-box;
-    word-wrap: break-word;
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--blackness);
+    color: var(--whiteness);
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+}
+
+body[data-vars] {
+    --trans-dur: 500ms;
+    --half-dur: 250ms;
+    --long-dur: 2000ms;
+    --hue: 350;
+    --pop: cubic-bezier(.2, .3, .7, 1.4);
+    --whiteness: hsl(var(--hue), 100%, 98%);
+    --lightness: hsl(var(--hue), 100%, 88%);
+    --midness: hsl(var(--hue), 90%, 70%);
+    --midness-x: hsl(var(--hue), 90%, 70%, 0.4);
+    --darkness: hsl(var(--hue), 100%, 25%);
+    --blackness: hsl(var(--hue), 70%, 5%);
+    --greyness: hsl(var(--hue), 0%, 50%);
 }
 
 /*
@@ -23,48 +51,34 @@ body > * > * > * > * { --bord: purple; }
 body > * > * > * > * > * { --bord: blue; }
 */
 
-html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
+body > div, body > div > div, #nitro > div {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100%;
-}
-
-body[data-vars] {
-    
-    --nose-h: 20;
-    --nose-s: 100%;
-    --nose-l: 90%;
-    --nose-a: 1;
-    
-    --lightness: hsl( var(--nose-h), var(--nose-s), var(--nose-l));
-    --midness: hsl( var(--nose-h), var(--nose-s),
-    calc(0.5 * var(--nose-l))
-    );
-    --midness-x: hsl( var(--nose-h), var(--nose-s), calc(0.5 * var(--nose-l)),0.5);
-    --darkness: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)));
-    --darkness-x: hsl( var(--nose-h), var(--nose-s), calc(0.35 * var(--nose-l)),0.5);
-    --blackness: hsl( var(--nose-h), var(--nose-s), calc(0.16 * var(--nose-l)));
-    --whiteness: hsl( var(--nose-h), var(--nose-s), 90%);
-    --greyness: hsl( var(--nose-h), 0%, 60%);
-    
-    --body-back: #000;
-    --scene-back: #111;
-    --trans-dur: 500ms;
-    
-}
-
-body {
-    
-    padding: 10px;
-    margin: 0;
-    background-color: var(--body-back);
     width: 100%;
-    height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
     user-select: none;
-    
+    transition: left ease-out var(--trans-dur);
+}
+
+img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    object-fit: contain;
+}
+
+em {
+    font-family: luckiest;
+    font-weight: bold;
+    text-align: center;
+    color: var(--darkness);
+    letter-spacing: 0.1ch;
+    -webkit-text-stroke: 1.4px var(--blackness);
 }
 
 [data-port] { display: none; }
@@ -83,24 +97,16 @@ body {
 <style id="xSVGxStyles">
 
 svg {
+    width: 100px;
+    height: 100px;
     overflow: visible;
+    
+    /*border: 5px solid;*/
 }
 
 path {
     vector-effect: non-scaling-stroke;
-    stroke-miterlimit: 300;
     stroke-width: 3px;
-    stroke: var(--lightness);
-    transition: all linear var(--trans-dur);
-}
-
-pattern path {
-    fill: var(--midness);
-    stroke-width: 0;
-    stroke: none;
-}
-
-circle {
     transition: all linear var(--trans-dur);
 }
 
@@ -108,103 +114,72 @@ circle {
 <style id="frameStyles">
 
 #frame {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background-color: var(--blackness);
-    overflow: hidden;
-    transition: background-color linear var(--trans-dur);
-}
-
-#frame > div {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
-#frame .deploy {
-    left: 0%;
-    
+    margin: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
 }
 
 </style>
 <style id="nitroStyles">
 
 #nitro {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    left: 0%;
-    background-color: var(--blackness);
-    transition: left linear var(--trans-dur);
-}
-
-#nitro > div {
-    position: absolute;
-}
-
-#nitro > div:nth-of-type(1) {
-    
-    display: block;
-    align-items: none;
-    justify-content: none;
-    width: 100%;
+    left: 100%;
     font-family: luckiest;
-    font-size: 80px;
-    text-align: center;
-    letter-spacing: -.05em;
-    color: var(--lightness);
-    -webkit-text-stroke: 2px var(--darkness);
-    opacity: 0.05;
-    transform: rotate(-20deg);
-    
+    background-color: var(--midness);
+    transition-delay: 400ms;
 }
 
-#nitro > div:nth-of-type(2) {
-    padding: 20px;
-    width: 100%;
-    hyphens: auto;
-    text-align: center;
-    font-size: 10px;
-    color: var(--whiteness);
+#nitro.show {
+    left: 0%;
+    transition-delay: 0ms;
+    --trans-dur: 0;
 }
 
-
-</style>
-<style id="sceneStyles">
-
-#scene {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#scene > div, #scene > svg {
-    position: absolute;
-}
-
-#sceneSVG {
+#nitro > svg {
     height: 100%;
     width: 100%;
 }
 
-</style>
-<style id="proprStyles">
-
-#propr_group > path {
-    fill: var(--lightness);
-    stroke: var(--midness);
-    opacity: 0;
-    transform: scale(0);
-    transition: opacity cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.4) var(--trans-dur), fill linear var(--trans-dur);
+#nitro > svg > use {
+    --cig-box-color: var(--darkness);
+    --shadow-color: hsla(var(--hue), 100%, 10%, 0.7);
 }
 
-#propr_group > path.show {
-    opacity: 1;
-    transform: scale(1.7);
+#nitro > div {
+    position: absolute;
+    display: block;
+    padding: 10px;
 }
+
+#nitro > .doublelick {
+    display: flex;
+    text-align: center;
+    color: var(--darkness);
+}
+
+@media screen and (orientation: portrait) {
+    
+    #nitro > .doublelick {
+        align-items: flex-end;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 20%;
+    }
+    
+}
+
+@media screen and (orientation: landscape) {
+    
+    #nitro > .doublelick {
+        align-items: center;
+        right: 0;
+        width: 40%;
+        height: 100%;
+    }
+    
+}
+
 
 </style>
 <style id="statsStyles">
@@ -218,10 +193,19 @@ circle {
     transition: left linear var(--trans-dur);
 }
 
+#stats.show {
+    left: 0%;
+}
+
 #stats div {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#stats svg {
+    width: 60px;
+    height: 60px;
 }
 
 @media (orientation: landscape) {
@@ -272,52 +256,155 @@ circle {
 
 }
 </style>
-<style id="chartStyles">
+<style id="sceneStyles">
+#scene {
+    background-color: var(--darkness);
+}
+</style>
+<style id="proprStyles">
 
-#chart path {
-    fill: none;
+.propr {
+    fill: var(--lightness);
+    stroke-width: 2px;
+    stroke: var(--midness);
+    opacity: 0;
+    transform: scale(0.2);
+    transition: all linear var(--trans-dur);
+}
+
+path.show {
+    opacity: 1;
+    transform: scale(2.5);
+    transition: opacity linear var(--trans-dur), transform var(--pop) var(--trans-dur), fill linear var(--trans-dur);
+}
+
+path.propr.fade {
+    fill: hsla(var(--hue),100%,100%,0);
+    stroke-width: 0.5px;
+    transition: all ease-in var(--long-dur);
+}
+
+</style>
+<style id="guessStyles">
+
+#scene > svg > g:nth-of-type(3) > path {
+    fill: var(--midness-x);
     stroke: var(--lightness);
 }
 
+#scene > svg > g:nth-of-type(1) {
+    transition: transform linear var(--trans-dur);
+}
+
+#scene > svg > g:nth-of-type(1) > path {
+    fill: var(--midness);
+    stroke: var(--lightness);
+}
+
+#scene > svg text {
+    font-size: 2px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
 </style>
-<style id="sButtStyles">
+<style id="shapeButSty">
+#shape_butt path {
+    fill: var(--darkness);
+    stroke: var(--lightness);
+    transform: scale(2.5);
+    transition: all linear var(--trans-dur);
+}
+#shape_butt path.lockedObj {
+    fill: var(--whiteness);
+    stroke: none;
+    transform: translate(-2px, 2.2px) scale(1);
+}
+</style>
+<style id="propButtSty">
+#propr_butt path {
+    fill: var(--darkness);
+    stroke: var(--lightness);
+    transform: scale(0.2);
+}
+#propr_butt path.show {
+    transform: scale(1.8);
+}
+#propr_butt path.lockedObj {
+    fill: var(--whiteness);
+    stroke: none;
+    transform: translate(-30px, 35px) scale(10);
+}
+</style>
+<style id="chartStyles">
 
-#shape_butt {
-    height: 100%;
-    width: 100%;
+#chart > svg {
+    height: 100px;
+    width: 100px;
 }
 
-#shape_butt > path {
-    fill: url(#shape_pattern);
-    stroke: var(--blackness);
-    transition: d linear var(--trans-dur), transform cubic-bezier(.2, .3, .7, 1.5) var(--trans-dur);
+#chart .stdLine {
+    fill: var(--midness-x);
+    stroke-width: 0;
+    stroke: var(--darkness);
+    transform: scale(1, 0);
+    transition: all linear var(--trans-dur);
+}
+
+#chart .stdLine.show {
+    transform: scale(1, 1);
+}
+    
+#chart .midLine {
+    fill: none;
+    stroke-width: 1px;
+    stroke: var(--whiteness);
+}
+
+#chart .aveLine {
+    fill: none;
+    stroke-width: 1px;
+    stroke: var(--midness);
+}
+    
+#chart .valLine{
+    fill: none;
+    stroke-width: 3px;
+    stroke: var(--darkness);
+}
+
+#chart .maxLine {
+    fill: none;
+    stroke-width: 5px;
+    stroke: hsl(var(--hue),0%,40%);
 }
 
 </style>
-<style id="pButtStyles">
+<style id="strucStyles">
 
-#propr_butt {
-    height: 100%;
+#instructions {
+    display: none;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    background-color: hsl(var(--hue), 100%, 20%, 0.4);
+    overflow: hidden;
+    border: 1px solid var(--whiteness);
+}
+
+#instructions.show {
+    display: flex;
+}
+
+#instructions > div {
+    display: block;
+    position: absolute;
+    padding: 10px;
+    text-align: justify;
     width: 100%;
-}
-
-#propr_butt_group {
-    pointer-events: bounding-box;
-}
-
-#propr_butt_group > path {
-    fill: url(#propr_pattern);
-    stroke: var(--blackness);
-    pointer-events: bounding-box;
-    opacity: 0;
-    transform: scale(0);
-    transition: opacity linear var(--trans-dur), transform linear calc(0.8 * var(--trans-dur));
-}
-
-#propr_butt_group > path.show {
-    opacity: 1;
-    transform: scale(0.6);
-    transition: transform cubic-bezier(.2, .3, .6, 1.5) var(--trans-dur);
+    height: 100%;
 }
 
 </style>
@@ -326,879 +413,809 @@ circle {
 <body data-vars>
     <div id="frame">
         <div id="scene">
-            <svg id="sceneSVG"
-             viewBox="-50 -50 100 100"
-             preserveAspectRatio="xMaxYMid meet"
-             style="width:100px;height:100px;"
-            >
-                
-              <defs>
-                  
-                <pattern id="shape_pattern" x="0" y="0"
-                 width="2" height="2"
-                 patternUnits="userSpaceOnUse"
-                 patternTransform="scale(0.15) rotate(45)"
-                >
-                    <path id="sub_shape_pattern"d="M0 0H2V2H0Z" />
-                    <path d="M0 0H1V2H0Z" />
-                </pattern>
-                                  
-                <pattern id="propr_pattern" x="0" y="0"
-                 width="2" height="2"
-                 patternUnits="userSpaceOnUse"
-                 patternTransform="scale(2) rotate(45)"
-                >
-                    <path id="sub_propr_pattern" d="M0 0H2V2H0Z" />
-                    <path d="M0 0H1V2H0Z" />
-                </pattern>
-                
-                <marker id="dotmark"
-                 viewBox="-1 -1 2 2"
-                 markerWidth="3"
-                 markerHeight="3"
-                >
-                  <circle r="1" fill="var(--midness)" />
-                </marker>
-                               
-                <marker id="lockmark"
-                 viewBox="-1 -1 2 2"
-                 markerWidth="3"
-                 markerHeight="3"
-                >
-                  <circle r="1"
-                   stroke-width="1"
-                   stroke="var(--blackness)"
-                   fill="var(--whiteness)"
-                   />
-                </marker>
-                
-              </defs>
-
-              <path id="target_path" fill="var(--midness)" />
-
-              <g id="propr_group" />
-
-              <g id="guess_scale" >
-                <path id="guess_path" fill="var(--midness-x)" />
-              </g>
-
+            <svg viewBox="-50 -50 100 100">
+                <g><path/></g>
+                <g></g>
+                <g><path/></g>
             </svg>
+            <div id="instructions">
+                <div>
+                    slide <b>left&#8209;and&#8209;right</b>
+                    to resize the middle shape until
+                    you think it represents the
+                    given size in relation to the
+                    <i>other shape</i> - when you
+                    are done, click the middle shape
+                    to submit and generate a new turn
+                    <br><br>
+                    if you click without resizing at all,
+                    that turn will be skipped
+                    <br><br>
+                    double-click to toggle a view of your
+                    stats for all the shapes and proportions
+                    <br><br>
+                    swipe up to display these instructions;
+                    swipe <i>down</i> to hide them now and
+                    begin
+                </div>
+            </div>
         </div>
         <div id="stats">
-            <div>
-                <svg id="chart"
-                 viewBox="-25 -25 50 50"
-                 preserveAspectRatio="xMaxYMid"
-                 width="100%"
-                 xxx-height="100% DO NOT DO THIS!!!"
-                 style="margin: 0px 20px;"
-                >
-                  <g transform="translate(-25)">
-                    <path id="mid_line"
-                     d="M0 0 50 0"
-                     style="
-                        fill:none;
-                        stroke-width: 1px;
-                        stroke: var(--whiteness);
-                        opacity: 0.5;
-                     "
-                    />
-                    <path id="ave_line"
-                     style="
-                        fill:none;
-                        stroke-width: 1px;
-                        stroke: var(--midness);
-                        opacity: 0.5;
-                     "
-                    />
-                    <path id="stat_line"
-                     marker-start="url(#dotmark)"
-                     marker-mid="url(#dotmark)"
-                     marker-end="url(#dotmark)"
-                    />
-                  </g>
+            <div id="chart">
+                <svg viewBox="-50 -50 100 100">
+                    <path/>
+                    <path/>
+                    <path/>
+                    <path/>
+                    <path/>
                 </svg>
             </div>
             <div>
-              <svg id="shape_butt"
-               viewBox="-2 -2 4 4"
-               preserveAspectRatio="xMidYMid meet"
-              >
-               <path id="shape_path" />
-              </svg>
-              <svg id="propr_butt"
-               viewBox="-20 -25 40 50"
-               preserveAspectRatio="xMidYMid meet"
-              >
-                        
-                <g id="propr_butt_group" />
-
-	          </svg>
+              <div id="shape_butt">
+                <svg viewBox="-2 -2 4 4"><path/></svg>
+              </div>
+              <div id="propr_butt">
+                <svg viewBox="-20 -25 40 50"></svg>
+              </div>
             </div>
         </div>
-        <div id="nitro">
-            <div>
-                PROPR
-                <br data-port>
-                <b>&middot;</b> FIT
-                <b data-port>&middot;</b>
-            </div>
-            <div>
-                slide left&#8209;and&#8209;right to resize the middle shape until, in your opinion, it represents the specified proportion of the target shape
-                <br><br> click for the next shape, or just click
-                <i>without resizing</i> to skip that turn
-                <br><br>
-                <br data-port>
-                <div style="
-                    width: 100%;
-                    text-align:center;
-                    font-family: luckiest;
-                    font-size: 2em;
-                    
-                ">
-                    double click to begin
-                    <br>
-                    <span style="font-size:0.4em;">
-                        [also to view stats]
-                    </span>
+        <div id="nitro" class="show">
+            <svg viewBox="0 0 150 200">
+                <use href="abe.svg#ikon"/>
+            </svg>
+            <div class="doublelick">
+                <div>
+                <span style="font-size:40px;"/>
+                <em>double lick</em>
+                </span>
+                <br>
+                <span style="color:var(--blackness)">
+                &middot; to jump right in &middot;
+                </span>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </body>
 
 <script>
 //////////////////////////////////////////////////
-// pizzaFace - MCMLXXXVIII                  /{
+// pizzaface MCMLXXXVIII                     {
 //
 // !! DEBUGG !!
-'use strict'
+'use strict';
 const log = console.log;
 localStorage.clear();
-//}
-
-new Date() < new Date('2028-10-13') && (() => {
-document.addEventListener('DOMContentLoaded', () => {
+/////////////////////////////////////////////////}
     
-// vars and utils {
+(() => document.addEventListener('DOMContentLoaded', () => {
 
-const
-appName = 'propFit',
-D = document,
-O = Object,
-W = window,
-A = O.assign,
-J = v => JSON.parse(v||'{}'),
-G = (...v) => v.sort((a, b) => a - b)[1],
-WAL = (...v) => W.addEventListener(...v),
-EDBL = v => v.addEventListener('dblclick', e => {
-    e.stopPropagation(); e.preventDefault();
-}, { passive: false }),
-DB = (f, p, t) => (...v) => {
-        clearTimeout(t);
-        t = setTimeout(() => f(...v), p);
-},
-NS = (
-    v, p={}, obj=D.createElementNS('http://www.w3.org/2000/svg', v)
-) => {
+    // preferences {
     
-    O.entries(p).forEach(a => {
-        obj.setAttribute(...a);
+    const defPrefs = {
+        appName : 'propr-fit',
+        guess  : { val: 50, min: 5, max: 300 },
+        target : { val: 20, min: 18, max: 80 },
+        stats : [],
+        stats_size : 11,
+        instructions: true
+    }
+
+    const prefs = Object.assign({}, defPrefs,
+        JSON.parse(localStorage[defPrefs.appName] || '{}')
+    );
+
+    //}
+
+    // utils {
+
+    const doc = document;
+    const byID = v => doc.getElementById(v);
+    const NS = (
+      v,p={},obj=doc.createElementNS('http://www.w3.org/2000/svg',v)
+    ) => {
+        Object.entries(p).forEach(a => obj.setAttribute(...a));
+        return obj;
+    };
+    
+    const gate = (...v) => v.sort((a, b) => a - b)[1];
+    const rand = v => ~~(crypto.getRandomValues(new Uint32Array(1))[0] / 2**32 * v);
+    const randSkip = (min, max, skip) => v => min + ((v - min) + skip + rand(max - 2 * skip)) % (max - min);
+    
+    const lizz = (v, ...r) => v.addEventListener(...r);
+    const lizX = (v, ...r) => v.removeEventListener(...r);
+    const kill = (v, t) => lizz(v, t, e => {
+        e.stopPropagation(); e.preventDefault();
+    }, { passive: false });
+    const debounce = (f, p = 100, t) => (...v) => {
+        clearTimeout(t); t = setTimeout(() => f(...v), p);
+    };
+    
+    //}
+
+    // vars {
+
+    const nitroDiv = byID('nitro');
+    const statsDiv = byID('stats');
+    const sceneDiv = byID('scene');
+    const sceneSVG = sceneDiv.children[0];
+    
+    const strucDiv = byID('instructions');
+    
+    const targetGroup = sceneSVG.children[0];
+    const targetPath = targetGroup.children[0];
+    const proprGroup = sceneSVG.children[1];
+    const guessGroup = sceneSVG.children[2];
+    const guessPath = guessGroup.children[0];
+    
+    const shapeButt = byID('shape_butt');
+    const shapeButtSVG = shapeButt.children[0];
+    const shapeButtPath = shapeButtSVG.children[0];
+    const proprButt = byID('propr_butt');
+    const proprButtSVG = proprButt.children[0];
+    
+    
+    const chartDiv = byID('chart');
+    const chartSVG = chartDiv.children[0];
+    const stdLine = chartSVG.children[0];
+    const midLine = chartSVG.children[1];
+    const aveLine = chartSVG.children[2];
+    const valLine = chartSVG.children[3];
+    const maxLine = chartSVG.children[4];
+    
+    'stdmidavevalmax'.match(/.../g).forEach((v, i) => {
+        chartSVG.children[i].classList.add(`${v}Line`);
     });
     
-    return obj;
-    
-},
-rand = v => ~~(crypto.getRandomValues(
-    new Uint32Array(1))[0] / (2 ** 32) * v
-);
+    let sceneW = 0;
+    let sceneH = 0;
+    let touchX = 0;
+    let touchY = 0;
+    let touchT = 0;
+    let chartW = 0;
+    let chartH = 0;
 
-;
-
-//}
-
-// prefs {
-
-const prefs = A({},{
-
-    stats : [],
-    stats_max : 11,
+    let isActualAttempt;
+    let dude;
     
-    guess : 50,
-    guess_min : 5,
-    guess_max : 200,
-    guess_actually_attempted : false,
-    
-    target_propr : 1,
-    target_scale : 50,
-    target_min : 10,
-    target_max : 100,
-    target_gap : 20,
-    
-    hue : 20,
-    shapeLock : false,
-    proprLock : false
-
-},J(localStorage.appName));
-
-//}
-
-// classexs {
-    
-class Xarray extends Array {
-    
-    #arrayIndex = 0;
-    
-    #updateIndex (v) {
-        
-        let length = this.length;
-        
-        this.#arrayIndex = (((this.#arrayIndex + (
-            (v === 'rand' ? (1 + rand(this.length - 1)) : v)
-        )) % length) + length) % length;
-    
-        return this[this.#arrayIndex];
-        
-    }
-    
-    get nextItem () { return this.#updateIndex(1); }
-    get prevItem () { return this.#updateIndex(-1); }
-    get randItem () { return this.#updateIndex('rand'); }
-    get currItem () { return this[this.#arrayIndex]; }
-    set currItem (v=0) {
-        let length = this.length;
-        this.#arrayIndex = ((v % length) + length) % length;
-    }
-    get currIndex () { return this.#arrayIndex; }
-    
-}
-
-const Shapes = new Xarray (
-    //{
-
-    // heart
-    //`M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
-    
-    // triangle
-    `M 0 .625 L -1.083 .625 A 0 0  0 0 1  -1.083 .625 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 1.083 .625 A 0 0  0 0 1  1.083 .625 Z`,
-    
-    // circle
-    `M 0 1 L 0 1 A 1 1  0 0 1  -1 0 L -1 0 A 1 1  0 0 1  0 -1 L 0 -1 L 0 -1 A 1 1  0 0 1  1 0 L 1 0 A 1 1  0 0 1  0 1 Z`,
-    
-    // square
-    `M 0 1 L -1 1 A 0 0  0 0 1  -1 1 L -1 -1 A 0 0  0 0 1  -1 -1 L 0 -1 L 1 -1 A 0 0  0 0 1  1 -1 L 1 1 A 0 0  0 0 1  1 1 Z`,
-    
-    // hexaberg
-    `M 0 1 L -.866 .5 A 0 0  0 0 1  -.866 .5 L -.866 -.5 A 0 0  0 0 1  -.866 -.5 L 0 -1 L .866 -.5 A 0 0  0 0 1  .866 -.5 L .866 .5 A 0 0  0 0 1  .866 .5 Z`,
-    
-    // rectangle
-    `M 0 1 L -1.414 1 A 0 0  0 0 1  -1.414 1 L -1.414 -1 A 0 0  0 0 1  -1.414 -1 L 0 -1 L 1.414 -1 A 0 0  0 0 1  1.414 -1 L 1.414 1 A 0 0  0 0 1  1.414 1 Z`
     //}
-);
-const Proprs = new Xarray (
-    //{
-    
-    // one/half (1/2)
-    //`M 5 -21 Q -4 -1 -9 20 L -12 15 Q -4 -5 1 -24 L 1 -24 Z   M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z   M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z`,
-    `M -20 -16 L -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 Z M 3 -24 L 8 -19.4 L -10 20 L -14.3 15 Z  M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z`,
-    
-    // one (1)
-    `M -13 -13 Q -7.5 -20 0 -25 L 7 -17 Q 5.5 0  6 10.5 L 11 11 L 10 25 L -10 25 L -11 12 L -6.25 11 L -6 -8 L -8 -6 Z`,
-    
-    // two (2)
-    `M -20 -15 C 10 -42 40 -5 0 10 L 20 10 L 18 25 L -18 25 L -20 10 C -10 10 7 2 3 -3 C -1 -6 -8 0 -10 2 Z`,
-    
-    // three (3)
-    `M -17 -25 L 20 -25 L 18 -11 Q 12 -11 9 -8.2 C 18.5 -5 23 7.7 18 15 C 5.685 34.544 -20.538 21.985 -19.992 5.54 L -6.6 -7 C -6.6 1.5 3 2.3 6 -1.4 C 7.813 -3.669 5.392 -7.34 -0.033 -7.34 L 5 -11 L -15 -11 Z `
-    //}
-);
-const Checks = new Xarray (
-    //{
-    `'M 9 27 L 14 17 L 14 17 Q 14 17 14 17 L 9 27 Q 9 27 9 27 Q 14 37 9 27 Z'`,
-    `'M 9 27 L 14 17 L 22 33 Q 22 33 22 33 L 23.25 46 Q 23.25 46 23.25 46 Q 14 37 9 27 Z'`,
-    `'M 9 27 L 14 17 L 22 33 Q 27 10 38 -8 L 44 2 Q 32 15.25 23.25 46 Q 14 37 9 27 Z'`
-    //}
-);
 
-//}
+    // app methods {
+    
+    const setSize = () => {
 
-// a statsex object {
+        let bbox = frame.getBoundingClientRect();
 
-class StatArray extends Array {
+        sceneW = bbox.width  / 2;
+        sceneH = bbox.height / 2;
+        
+        size.update;
+        alterTarget();
+        
+        bbox = chartDiv.getBoundingClientRect();
+        
+        chartW = (bbox.width  / 2) - 5;
+        chartH = (bbox.height / 2) - 10;
+        
+        drawChart();
+        
+        isActualAttempt = false;
+        
+    };
     
-    constructor (v) {
-        super();
-        if (v?.vals?.length) {
-            this.push(...v.vals);
-        }
-        let { vals, ...rest } = v;
-        for (let i in rest) {
-            this[i] = v[i];
-        }
-        return this;
-    }
-    
-    push (v) {
+    const togStats = () => {
+        isActualAttempt = false;
+        statsDiv.classList.toggle('show');
+    };
+
+    const reqFull = () => {
+
+        doc.documentElement.requestFullscreen();
+        lizz(doc, 'dblclick', togStats);
+        nitroDiv.classList.remove('show');
+        setSize();
+        sceneSVG.dispatchEvent(new Event('click'));
+
+    };
+
+    const scaleGuess = v => {
         
-        // add the new value
-        super.push(v);
+        isActualAttempt = true;
         
-        // increment the count
-        this.cnt++;
+        guessGroup.setAttribute('transform',  `scale(${
+            prefs.guess.val =  gate(
+                prefs.guess.val + v, prefs.guess.min, prefs.guess.max
+            )
+        })`);
         
-        // if the array is too short
-        if (this.length <= this.siz) {
-            
-            // if there is no average yet
-            if(this.ave == '') {
-                
-                // then ave is just the current val
-                this.ave = v;
-                
-            } else {
-                
-                // otherwise, average the array
-                this.ave = this.reduce((a,b)=>a+b,0)/this.length;
-                
-            }
-            
-        } else { // array is long enough
+    };
         
-            super.shift();
+    const alterGuess = () => {
         
-            // update the running average
-            this.ave = (((this.cnt - 1) * this.ave) + v) / this.cnt;
-            
-        }
-        
-        // update min/max
-        this.min = Math.min(...this, this.min);
-        this.max = Math.max(...this, this.max);
-        
-        return this.serialize();
-        
-    }
-    
-    makeStatLine () {
-        return this.length === 0 ?
-            `M${new Array(this.siz).fill(`25 0`).join(' ')}` :
-            
-            this.length === 1 ?
-            `M${new Array(this.siz).fill(`25 ${1 - this.ave}`).join(' ')}` :
-            
-            this.length < this.siz ?
-            `M${new Array(this.siz - this.length).fill(`0 ${1 - this[0]}`).join(' ')} ${this.map((v, i) => `${(50/(this.length - 1)) * i} ${1 - v}`)}` :
-            
-            `M${this.map((v, i) => `${(50/(this.siz - 1)) * i} ${1 - v}`)}`;
-        //return tmp;
-    }
-    
-    makeAveLine () {
-        return this.ave === '' ?
-            `M25 0 25 0` :
-            `M0 ${1 - this.ave} 50 ${1 - this.ave}`;
-    }
-    
-    serialize () {
-        return JSON.stringify(
-            Object.assign({}, { vals: [...this] }, this)
+        guessPath.setAttribute('transform',
+            `rotate(${
+                // no hearts
+                size.o2
+                // yes hearts
+                //shapes.currIndex === 0 ?
+                //size.h : size.o2
+            })`
         );
-    }
 
-    static deserialize (serializedData) {
-        return new StatArray(JSON.parse(serializedData));
-    }
+    };
+ 
+    const alterTarget = () => {
+        
+        targetPath.setAttribute('d', shapes.currItem);
+        
+        targetGroup.setAttribute(
+            'transform',
+            `translate(
+                ${size.neg * size.x}
+                ${size.neg * size.y}
+            ) rotate(${size.o}) scale(${(prefs.target.val=size.s)})`
+        );
+    };
     
-}
+    const drawChart = (v=dude) => {
+    
+        let p = proprs.currVal;
+        
+        stdLine.setAttribute('d', v.makeStdLine(p));
+        midLine.setAttribute('d', v.makeMidLine(p));
+        aveLine.setAttribute('d', v.makeAveLine(p));
+        valLine.setAttribute('d', v.makeValLine(p));
+        maxLine.setAttribute('d', v.makeMaxLine(p));
+        
+    };
+    
+    const setDude = (a=proprs.currIndex, b=shapes.currIndex) => {
+        dude = allStats[a][b];
+    };
+    
+    //}
+    
+    // a swipe event maker {
+    
+    function makeSwiper(
+        element, swipeThreshold=100, timeThreshold=200
+    ) {
+        
+        swipeThreshold *= window.devicePixelRatio || 1;
 
-const AllStats = Proprs.map((p, i) => {
-    return Shapes.map((s, j) => {
+        let touchX, touchY, touchT;
+    
+        element.addEventListener('touchstart', function(e) {
+            touchX = e.touches[0].pageX;
+            touchY = e.touches[0].pageY;
+            touchT = e.timeStamp;
+        });
+    
+        element.addEventListener('touchend', function(e) {
+
+            const deltaX = e.changedTouches[0].pageX - touchX;
+            const deltaY = e.changedTouches[0].pageY - touchY;
+            const deltaT = e.timeStamp - touchT;
+            
+            const rtlf =
+                Math.abs(deltaX) > swipeThreshold
+                && deltaY < swipeThreshold ?
+                (deltaX > 0 ? 'right' : 'left') : null;
+                
+            const updn =
+                Math.abs(deltaY) > swipeThreshold
+                && deltaX < swipeThreshold ?
+                (deltaY > 0 ? 'down' : 'up') : null;
+    
+            if (deltaT < timeThreshold && (updn || rtlf)) {
+                element.dispatchEvent(new CustomEvent('swipe', {
+                    detail: { dir: updn || rtlf }
+                }));
+            }
+        });
+    }
+
+    //}
+    
+    // size proxy {
+    
+    const size = new Proxy({
+        x:100, y:23, o:23, o2:23, s:23, h: 23,
+        rand: {},
+        neg: () => (rand(2) || -1),
+        update: t => {
+            
+            const yReg = randSkip( 0, sceneH - 10, 10);
+            const yGap = randSkip(50, sceneH - 10, 10);
+            
+            t.rand = {
+                x: randSkip(0, sceneW - 10, 10),
+                y: v => (t.x < 50 ? yGap : yReg)(v),
+                o: randSkip(0, 500, 20),
+                o2: randSkip(0, 500, 20),
+                h: randSkip(-30, 30, 10),
+                s: randSkip(prefs.target.min, prefs.target.max, 20)
+            }
+        },
+    },{ get (t, p) {
+        return (typeof t[p] === 'function') ?
+            t[p](t) : (t[p] = t.rand?.[p]?.(t[p]));
+    }});
+    
+    //}
+
+    // index tracking array {
+
+    class Xarray extends Array {
+        
+        constructor (...v) {
+            super(...v);
+            lizz(this.lockedObj, 'dblclick', () => {
+                this.locked = false;
+                this.lockedObj.remove();
+            });
+        }
+        
+        #arrayIndex = 0;
+        
+        locked = false;
+        
+        lockedObj = NS('path', {
+            d: `M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
+            ['class'] : 'lockedObj'
+        });
+
+        #mod (v, m=this.length) { return ((v % m) + m) % m; }
+
+        #updateIndex (v) {
+        
+            return this[ this.locked ? this.#arrayIndex : (
+                this.#arrayIndex = this.#mod(this.#arrayIndex + (
+                    (v === 'rand' ? (1 + rand(this.length - 1)) : v)
+                ))
+            )];
+        
+        }
+        
+        get currItem() { return this[this.#arrayIndex]; }
+        get nextItem() { return this.#updateIndex(1); }
+        get randItem() { return this.#updateIndex('rand'); }
+        get currIndex() { return this.#arrayIndex; }
+
+    }
+
+    //}
+    
+    // shapes xarray {
+    
+    const shapes = new Xarray(
+        //{
+
+        // heart
+        //`M 0 1 L 0 1 A 0 0  0 0 1  0 1 L -1 0 A .707 .707  0 0 1  0 -1 L 0 -1 L 0 -1 A .707 .707  0 0 1  1 0 L 0 1 A 0 0  0 0 1  0 1 Z`,
+
+        // triangle
+        `M 0 .625 L -1.083 .625 A 0 0  0 0 1  -1.083 .625 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 0 -1.25 L 0 -1.25 A 0 0  0 0 1  0 -1.25 L 1.083 .625 A 0 0  0 0 1  1.083 .625 Z`,
+
+        // circle
+        `M 0 1 L 0 1 A 1 1  0 0 1  -1 0 L -1 0 A 1 1  0 0 1  0 -1 L 0 -1 L 0 -1 A 1 1  0 0 1  1 0 L 1 0 A 1 1  0 0 1  0 1 Z`,
+
+        // square
+        `M 0 1 L -1 1 A 0 0  0 0 1  -1 1 L -1 -1 A 0 0  0 0 1  -1 -1 L 0 -1 L 1 -1 A 0 0  0 0 1  1 -1 L 1 1 A 0 0  0 0 1  1 1 Z`,
+
+        // hexaberg
+        `M 0 1 L -.866 .5 A 0 0  0 0 1  -.866 .5 L -.866 -.5 A 0 0  0 0 1  -.866 -.5 L 0 -1 L .866 -.5 A 0 0  0 0 1  .866 -.5 L .866 .5 A 0 0  0 0 1  .866 .5 Z`,
+
+        // rectangle
+        `M 0 1 L -1.414 1 A 0 0  0 0 1  -1.414 1 L -1.414 -1 A 0 0  0 0 1  -1.414 -1 L 0 -1 L 1.414 -1 A 0 0  0 0 1  1.414 -1 L 1.414 1 A 0 0  0 0 1  1.414 1 Z`
+        //}
+    );
+    
+    
+    //}
+    
+    // proprs xarray {
+    
+    const proprs = new class extends Xarray {
+                
+        constructor(...v) {
+            super(...v);
+            this.sceneObjs = [...this].map(v => NS('path', {
+                d: v, ['class'] : 'propr'
+            }));
+            proprGroup.append(...this.sceneObjs);
+            this.buttonObjs = [...this].map(v => NS('path', {
+                d: v, ['class'] : 'propr'
+            }));
+            proprButtSVG.append(...this.buttonObjs);
+        }
+        
+        sceneObjs = [];
+        buttonObjs = [];
+        
+        get currSceneObj() { return this.sceneObjs[this.currIndex]; }
+        get currButtObj() { return this.buttonObjs[this.currIndex]; }
+        get currVal() { return [0.5, 1, 2, 3][this.currIndex]; }
+        
+    }(
+        //{
+        
+        // one/half (1/2)
+        //`M 5 -21 Q -4 -1 -9 20 L -12 15 Q -4 -5 1 -24 L 1 -24 Z   M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z   M -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 L -20 -16 Z`,
+        `M -20 -16 L -14 -25 L -9 -20 L -9 5 L -15 9 L -15 -13 Z M 3 -24 L 8 -19.4 L -10 20 L -14.3 15 Z  M -2 0 C 14 -17 30 7 10 15 L 20 15 L 18 25 L 1 25 L 0 15 C 10 15 9 5 3 11 Z`,
+        
+        // one (1)
+        `M -13 -13 Q -7.5 -20 0 -25 L 7 -17 Q 5.5 0  6 10.5 L 11 11 L 10 25 L -10 25 L -11 12 L -6.25 11 L -6 -8 L -8 -6 Z`,
+        
+        // two (2)
+        `M -20 -15 C 10 -42 40 -5 0 10 L 20 10 L 18 25 L -18 25 L -20 10 C -10 10 7 2 3 -3 C -1 -6 -8 0 -10 2 Z`,
+        
+        // three (3)
+        `M -17 -25 L 20 -25 L 18 -11 Q 12 -11 9 -8.2 C 18.5 -5 23 7.7 18 15 C 5.685 34.544 -20.538 21.985 -19.992 5.54 L -6.6 -7 C -6.6 1.5 3 2.3 6 -1.4 C 7.813 -3.669 5.392 -7.34 -0.033 -7.34 L 5 -11 L -15 -11 Z `
+        //}
+    );
+
+    //}
+    
+    // stats objects {
+
+    class StatsArray extends Array {
+    
+        constructor(v) {
+            super();
+            if (v?.vals?.length) {
+                this.push(...v.vals);
+            }
+            for (let i in v) {
+                if (i !== 'vals') this[i] = v[i];
+            }
+        }
+    
+        push(v) {
+            super.push(v);
+            this.#updateStats(
+                (this.length > this.siz ? this.shift() : null), v
+            );
+            return this.serialize();
+        }
+
+        #updateStats(oldValue, newValue) {
+            
+            // Update count
+            this.cnt++;
+        
+            // Update average
+            const oldAve = this.ave;
+            this.ave += (newValue - oldAve) / this.length;
+        
+            // Update minimum and maximum
+            if (newValue < this.min) this.min = newValue;
+            if (newValue > this.max) this.max = newValue;
+            
+            // Update M2 and standard deviation
+            let delta = newValue - oldAve;
+            let deltaOld = oldValue !== null ? oldValue - oldAve : 0;
+
+            this.M2 += delta * (newValue - this.ave) - deltaOld * (oldValue - this.ave);
+
+            this.std = Math.sqrt(this.M2 / this.length);
+            
+        }
+        
+        calcY(v, p) {
+            return -chartH * (
+                v <= p ? ((v / p) - 1) :
+                v <= 5*p ? ((v - p) / (4*p) * 0.7) :
+                (1 - 0.3 / (1.5**(v - 5*p)))
+            );
+        }
+        
+        makeStdLine(p) {
+            stdLine.setAttribute('transform-origin',`0 ${this.calcY(this.ave,p)}`);
+            return this.std === null ?
+                `M 0 0 0 0 0 0 0 0 Z` :
+                `M ${-chartW} ${this.calcY(this.ave+this.std, p)}
+                   ${ chartW} ${this.calcY(this.ave+this.std, p)}
+                   ${ chartW} ${this.calcY(this.ave-this.std, p)}
+                   ${-chartW} ${this.calcY(this.ave-this.std, p)}
+                 Z`;
+            
+        }
+        
+        makeMidLine(p) {
+            return `M${-chartW} 0 ${chartW} 0`;
+        }
+        
+        makeAveLine(p) {
+            return this.ave === null ?
+                `M 0 0 0 0` :
+                `M ${-chartW} ${this.calcY(this.ave, p)}
+                   ${ chartW} ${this.calcY(this.ave, p)}`;
+        }
+        
+        makeValLine(p) {
+            return this.length === 0 ?
+                `M${new Array(this.siz).fill(`0 0`).join(' ')}` :
+    
+                this.length === 1 ?
+                `M${new Array(this.siz).fill(`0 ${this.calcY(this.ave, p)}`).join(' ')}` :
+    
+                this.length < this.siz ?
+                `M${new Array(this.siz - this.length).fill(`${-chartW} ${
+                    this.calcY(this[0], p)
+                }`).join(' ')} ${this.map((v, i) => `${
+                
+                -chartW + (2*chartW/(this.length - 1)) * i
+                    
+                } ${this.calcY(v, p)}`)}` :
+    
+                `M${this.map((v, i) => `${
+                    -chartW + (2*chartW/(this.siz - 1)) * i
+                } ${this.calcY(v, p)}`)}`;
+
+        }
+        
+        makeMaxLine(p) {
+            return this.length < 1 ?
+            `M ${-chartW} 0 ${-chartW} 0` :
+            `M ${-chartW} ${this.calcY(this.min, p)}
+               ${-chartW} ${this.calcY(this.max, p)}`;
+        }
+        
+        serialize() {
+            return JSON.stringify(
+                Object.assign({}, { vals: [...this] }, this)
+            );
+        }
+    
+        static deserialize(v) {
+            return new StatsArray(JSON.parse(v));
+        }
+    
+    }
+
+    const allStats =
+        [...proprs].map((p, i) =>
+        [...shapes].map((s, j) => {
         if (!prefs.stats[i]) {
             prefs.stats[i] = [];
         }
-        if (prefs.stats[i]?.[j]) {
-            return StatArray.deserialize(prefs.stats[i][j]);
-        } else {
-            const tmp = StatArray.deserialize(
-                JSON.stringify({
-                    vals: [],
-                    siz: prefs.stats_max,
-                    cnt: 0,
-                    ave: '',
-                    min: '',
-                    max: '',
-                    std: '',
-                    cov: ''
-                })
-            );
+        if (prefs.stats[i][j]) {
+            return StatsArray.deserialize(prefs.stats[i][j]);
+        }
+        else {
+            const tmp = new StatsArray({
+                vals: [],
+                siz: prefs.stats_size,
+                cnt: 0,
+                ave: null,
+                min: Infinity,
+                max: -Infinity,
+                std: null,
+                cov: 0,
+                M2: 0
+            });
             prefs.stats[i][j] = tmp.serialize();
             return tmp;
         }
-    });
-});
-
-//}
-
-// fill the shapes on load {
-
-[target_path, guess_path, shape_path].forEach(v => {
-    v.setAttribute('d', Shapes.currItem);
-});
-
-guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
-
-//}
-
-// fill the porprs on load {
-Proprs.forEach(propr => {
+    }));
     
-    [propr_group, propr_butt_group].forEach(g => {
+    //}
+
+    // full-screen on resize {
+
+    lizz(window, 'resize', debounce(setSize));
+    lizz(doc, 'dblclick', reqFull, { once: true });
+    lizz(doc, 'fullscreenchange', e => {
+        if (!doc.fullscreenElement) {
+            lizX(doc, 'dblclick', togStats);
+            lizz(doc, 'dblclick', reqFull, { once: true });
+            nitroDiv.classList.add('show');
+            statsDiv.classList.remove('show');
+        }
+    });
+
+
+    //}
+
+    // handel click on guess  {
+
+    kill(targetPath, 'click');
+    kill(sceneSVG, 'dblclick');
+    lizz(sceneSVG, 'click', () => {
         
-        g.append(NS('path',{
+        if (isActualAttempt) {
             
-          //d:`M -20 -25Z ${propr} M20 25Z`
-            d: propr
-            
-        }));
-        
-    });
-    
-});
-
-    
-//}
-
-// handel a submitted guess {
-
-EDBL(guess_path);
-
-guess_path.addEventListener('click', () => {
-    
-    // if a guess was actually attempted {
-    if (prefs.guess_actually_attempted) {
-    
-        // push the value in to the stats object
-        prefs.stats[Proprs.currIndex][Shapes.currIndex] =
-        AllStats[Proprs.currIndex][Shapes.currIndex].push(
-            prefs.guess ** 2 /
-           (prefs.target_propr *
-            prefs.target_scale ** 2)
-            
-        );
-        
-        // reset guess maker
-        prefs.guess_actually_attempted = false;
-        
-    }
-    //}
-    
-    // pick a random shape if not locked
-    if (!prefs.shapeLock) Shapes.randItem;
-    
-    // set all paths to the current shape
-    [target_path, guess_path, shape_path].forEach(v =>
-        v.setAttribute('d', Shapes.currItem)
-    );
-
-    // pick a ranged-random target scale {
-    prefs.target_scale = prefs.target_min + (
-        ((prefs.target_scale - prefs.target_min)
-        +
-        prefs.target_gap
-        +
-        rand(
-            prefs.target_max
-            -
-            2 * prefs.target_gap
-        )) % prefs.target_max
-    );
-    
-    //}
-    
-    // place the target path in a new spot {
-    target_path.setAttribute('transform', `
-        translate(
-            ${(rand(2)<1?-1:1) * (sceneW+rand(adjustW))},
-            ${(rand(2)<1?-1:1) * (sceneH+rand(adjustH))}
-        )
-        scale(${prefs.target_scale})
-        rotate(${rand(500)})
-    `);
-    //}
-
-    // rotate the guess path if not a heart {
-    guess_path.setAttribute('transform', `rotate(${
-        Shapes.currIndex === 0 ? (
-         (rand(2)<1?-1:1) * (8 + rand(25))
-        ) : rand(500)
-    })`);
-    //}
-
-    // pick a random proportion if not locked {
-    if (!prefs.proprLock) Proprs.randItem;
-
-    // hide all the proportions
-    [...propr_group.children, ...propr_butt_group.children]
-    .forEach(v => {
-        v.classList.remove('show');
-        v.classList.remove('fade');
-    });
-    //}
-
-    // set the proportion value as a number
-    prefs.target_propr = [0.5,1,2,3][Proprs.currIndex];
-    
-    // display the current proportion
-    [propr_group, propr_butt_group].forEach(v => {
-        v.children[Proprs.currIndex].classList.add('show');
-    });
-    
-    // reset the stats screen
-    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
-
-    // gradually fade the color
-    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-
-});
-
-//}
-
-// handel shape button {
-
-// choke double clicks on the shape itself
-EDBL(shape_path);
-
-// change shape on click of shape itself
-shape_path.addEventListener('click', () => {
-    
-    // if locked, just skip out
-    if (prefs.shapeLock) return;
-    
-    // otherwise get the next shape
-    Shapes.nextItem;
-    
-    // set every path to that shape
-    [target_path, guess_path, shape_path].forEach(v => {
-        v.setAttribute('d', Shapes.currItem);
-    });
-
-    // update the statlines
-    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
-    
-    // fade the color
-    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-    
-    
-});
-
-// lock shape on double click in button area
-shape_butt.addEventListener('dblclick', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    prefs.shapeLock = !prefs.shapeLock;
-    
-    sub_shape_pattern.style.setProperty('fill',
-        prefs.shapeLock ? 'var(--whiteness)':'var(--midness)'
-    );
-    
-    ['start', 'mid'].forEach(v => {
-        shape_path.setAttribute('marker-' + v,
-            prefs.shapeLock ? 'url(#lockmark)' : 'none'
-        );
-    });
-    
-}, { passive: false });
-
-//}
-
-// handel propr button {
-
-// choke double clicks on the propr numbers and group
-[...propr_butt_group.children, propr_butt_group].forEach(v => EDBL(v));
-
-// change propr on click of propr group
-propr_butt_group.addEventListener('click', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    if (prefs.proprLock) return;
-
-    Proprs.nextItem;
-
-    [...propr_group.children, ...propr_butt_group.children].forEach(v => {
-        v.classList.remove('show');
-        v.classList.remove('fade');
-    });
-
-    [propr_group, propr_butt_group].forEach(v => {
-        v.children[Proprs.currIndex].classList.add('show');
-    });
-
-    resetStatScreen(AllStats[Proprs.currIndex][Shapes.currIndex]);
-
-    D.body.style.setProperty('--nose-h', (prefs.hue += 7));
-    
-});
-
-// lock propr on doubleclick of butt area
-propr_butt.addEventListener('dblclick', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    prefs.proprLock = !prefs.proprLock;
-    
-    sub_propr_pattern.style.setProperty('fill',
-        prefs.proprLock ? 'var(--whiteness)':'var(--midness)'
-    );
-    [...propr_butt_group.children].forEach(v => {
-        
-        ['start'].forEach(type => {
-        
-            v.setAttribute('marker-' + type,
-                prefs.proprLock ? 'url(#lockmark)' : 'none'
+            prefs.stats[proprs.currIndex][shapes.currIndex] =
+            dude.push(
+                (prefs.guess.val**2 / prefs.target.val**2)
             );
+           
+            isActualAttempt = false;
+            
+        }
+        
+        shapes.randItem;
+        guessPath.setAttribute('d', shapes.currItem);
+        alterGuess();
+        alterTarget();
+        shapeButtPath.setAttribute('d', shapes.currItem);
+        
+        proprs.randItem;
+        [...proprs.sceneObjs, ...proprs.buttonObjs].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+        [proprs.currSceneObj, proprs.currButtObj].forEach(v => {
+            v.classList.add('show');
+        });
+        setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
+        
+        setDude()
+        drawChart();
+        
+    });
+
+    //}
+
+    // handel slide on scene {
+
+    kill(doc, 'touchmove');
+    kill(scene, 'touchmove');
+    lizz(scene, 'touchstart', e => touchX = e.touches[0].pageX);
+    lizz(scene, 'touchmove', e => {
+
+        scaleGuess(-1 * (
+            (touchX - e.touches[0].pageX) /
+            (e.touches[1] ? 300 : 40)
+        ));
+
+    });
+
+    //}
+
+    // handel wheel on scene {
+    kill(scene, 'wheel');
+    lizz(scene, 'wheel', e => {
+
+        scaleGuess(
+            (e.deltaX) /
+            (e.ctrlKey ? 300 : 40)
+        );
+
+    });
+
+    //}
+
+    // handel arrow on scene {
+
+    lizz(doc, 'keydown', e => {
+
+        if (e.key === 'Enter') {
+
+            if (e.ctrlKey) {
+                doc.dispatchEvent(new Event('dblclick'));
+            }
+            else {
+                sceneSVG.dispatchEvent(new Event('click'));
+            }
+            return;
+
+        }
+
+        scaleGuess((
+            (e.key === 'ArrowRight' || e.key === 'l') ? 1 :
+            (e.key === 'ArrowLeft' || e.key === 'j') ? -1 :
+            0
+        ) * (e.ctrlKey ? 2 : 10));
+
+
+    }, { passive: false });
+
+    //}
+
+    // hendal shape button {
+    
+    kill(shapeButt, 'click');
+    kill(shapeButt, 'dblclick');
+    kill(shapeButtSVG, 'click');
+    kill(shapeButtSVG, 'dblclick');
+    lizz(shapeButtSVG, 'click', () => {
+        
+        shapes.nextItem;
+        [shapeButtPath, guessPath, targetPath].forEach(v => {
+            v.setAttribute('d', shapes.currItem);
         });
         
+        setDude();
+        drawChart();
+        
+        isActualAttempt = false;
+        
     });
     
-},{ passive: false });
-
-//}
-
-// method to reset stats screen {
-
-const resetStatScreen = v => {
-    stat_line.setAttribute('d', v.makeStatLine());
-    ave_line.setAttribute('d', v.makeAveLine());
-}
-
-//}
-
-// toggle full-screen/chart on double click {
-
-WAL('dblclick', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    nitro.style.left = '100%';
-
-    guess_path.dispatchEvent(new Event('click'));
-    
-    // !! DEBUGG !!
-    D.body.requestFullscreen().then((...x) => {
-        
-        D.body.style.width = '100vw';
-        D.body.style.height = '100vh';
-        
-        WAL('dblclick', e => {
-            
-            e.stopPropagation();
-            e.preventDefault();
-            
-            stats.classList.toggle('deploy');
-            
-        }, { passive: false });
-    
+    lizz(shapeButt, 'dblclick', () => {
+        shapes.locked = !shapes.locked;
+        shapes.locked ? shapeButtSVG.append(shapes.lockedObj) :
+                        shapes.lockedObj.remove();
     });
     
+    //}
     
-}, { passive: false, once: true });
-
-//}
-
-// debounce re-set init vals {
-
-let adjustW;
-let adjustH;
-let sceneW;
-let sceneH;
-
-const resetVals = () => {
+    // kendal propr button {
     
-    let BB = sceneSVG.getBBox();
-    sceneW = BB.width /2;
-    sceneH = BB.height/2;
-    adjustW = (-1*((BB.width/2) + 5)) + parseInt(scene.offsetWidth /2);
-    adjustH = (-1*((BB.height/2) + 5)) + parseInt(scene.offsetHeight/2);
-    
-}
-resetVals();
-
-WAL('resize', DB(resetVals, 100));
-    
-//}
-
-// scale guess on scene touches {
-
-let M = 0;
-
-scene.addEventListener('touchstart', e => M = e.touches[0].pageX);
-
-scene.addEventListener('touchmove', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    prefs.guess_actually_attempted = true;
-    
-    prefs.guess = G(
-        prefs.guess - (
-            (M-e.touches[0].pageX)
-            /
-            (e.touches[1] ? 300 : 40)
-        ),
-        5, 200
-    );
-    
-    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
-    
-}, { passive: false });
-
-//}
-
-// scale guess on scene wheels {
-
-scene.addEventListener('wheel', e => {
-    
-    e.stopPropagation();
-    e.preventDefault();
-    
-    prefs.guess_actually_attempted = true;
-    
-    prefs.guess = G(
-        prefs.guess - (
-            (M-e.deltaX)
-            /
-            (e.ctrlKey ? 300 : 40)
-        ),
-        5, 200
-    );
-    
-    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
-    
-    
-}, { passive: false });
-
-//}
-
-// scale guess on arrow keys {
-    
-D.addEventListener('keydown', e => {
-    
-    if (e.key === 'Enter') {
-        guess_path.dispatchEvent(new Event('click'));
-        return;
-    }
-    
-    prefs.guess_actually_attempted = true;
-    
-    prefs.guess = G (
-        (prefs.guess + (
-        (e.key === 'ArrowRight' || e.key === 'l') ?  1 :
-        (e.key === 'ArrowLeft'  || e.key === 'j') ? -1 :
-        0) * (e.ctrlKey ? 2 : 10)),
-        5, 200
-    );
-    
-    guess_scale.setAttribute('transform', `scale(${prefs.guess})`);
-   
-}, { passive: false });
-
-//}
-
-// store prefs function {
-const storePrefs = () => {
-    localStorage.setItem(appName, JSON.stringify(prefs));
-};
-//}
-
-// call store prefs on unload {
-WAL('beforeunload', () => {
-    storePrefs();
-});
-//}
-
-//////////////////////////////////////////////////
-
-// !! DEBUGG !!
-// fake stat generator {
-/*
-const fakeStats = () => {
-    
-    let ave = [];
-    
-    stat_line.setAttribute('d', 'M'+
-        [...new Array(11).fill(0)].map((v,i) => {
-            
-            ave.push(-10 + rand(20));
-            return `${i * 5} ${ave.at(-1)}`;
-            
-        }).join(' ')
-    );
-    
-    let yyy = (ave.reduce((a,v) => a + v, 0) / ave.length);
-    
-    ave_line.setAttribute('d',
-        `M0 ${yyy} 50 ${yyy}`
-    );
-    
-};
-fakeStats();
-*/
-//}
-
-// !! DEBUGG !!
-// path transforming function {
-/*
-let shift_paths = [
-"M 20 0 L 25 5 Q 23 27 25 38 L 29 37 L 30 46 L 15 50 L 12 42 L 17 40 Q 16 27 17 13 L 15 15 L 11 9 Q 15 4 20 0 Z"
-];
-    
-shift_paths = shift_paths.map(path => {
-    
-    // split on letter
-    let lines = path.trim().split(/([A-Z])/);
-    
-    // loop through each of those
-    lines = lines.map(line => {
+    kill(proprButt, 'click');
+    kill(proprButt, 'dblclick');
+    kill(proprButtSVG, 'click');
+    kill(proprButtSVG, 'dblclick');
+    lizz(proprButtSVG, 'click', () => {
         
-        // split those up on the space
-        let part = line.trim().split(' ');
+        proprs.nextItem;
+        [...proprs.sceneObjs, ...proprs.buttonObjs].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+        proprs.currSceneObj.classList.add('show');
+        setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
+        proprs.currButtObj.classList.add('show');
         
-        // if it actually has values
-        if (part.length > 1) {
-            
-            // loop through those
-            part = part.map((coord, i) => {
-                
-                
-                // if index is even, change by y value
-                if (i%2 === 0) {
-                    return coord = Number(coord) -20;
-                    
-                } else { // else change by x value
-                    return coord = Number(coord) -25;
-                }
-                
-            });
-            
-            return part;
-        } else {
-            return line;
+        setDude();
+        drawChart();
+        
+        isActualAttempt = false;
+        
+    });
+    
+    lizz(proprButt, 'dblclick', () => {
+        
+        proprs.locked = !proprs.locked;
+        proprs.locked ? proprButtSVG.append(proprs.lockedObj) :
+                        proprs.lockedObj.remove();
+        
+    });
+    
+    //}
+    
+    // toggle standard deviation {
+    
+    lizz(aveLine, 'click', e => {
+        e.stopPropagation();
+        stdLine.classList.toggle('show');
+    });
+    
+    lizz(stdLine, 'click', e => {
+        e.stopPropagation();
+        stdLine.classList.remove('show');
+    });
+        
+    //}
+    
+    // toggle instructions on scene swipe {
+    
+    if (prefs.instructions) strucDiv.classList.add('show');
+    
+    makeSwiper(scene, 30, 200);
+    lizz(scene, 'swipe', (e, v=e.detail.dir) => {
+        if (v === 'up') {
+            strucDiv.classList.add('show');
+            prefs.instructions = true;
+        } else if (v === 'down') {
+            strucDiv.classList.remove('show');
+            prefs.instructions = false;
         }
     });
     
-    return lines.flat().join(' ').trim();
-});
 
-//log(paths);
-*/
-//}
+    //}
+    
+    // on init {
 
+    setDude(0, 0);
+    scaleGuess(0);
 
-
-})})() === undefined || console.log('exp!red');
+    //}
+    
+}))();
 </script>
+
+</html>
