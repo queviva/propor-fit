@@ -382,29 +382,40 @@ path.propr.fade {
 </style>
 <style id="strucStyles">
 
-#instructions {
+#struc {
     display: none;
     position: absolute;
     align-items: center;
     justify-content: center;
-    width: calc(100% - 40px);
-    height: calc(100% - 40px);
-    background-color: hsl(var(--hue), 100%, 20%, 0.4);
+    width: 100%;
+    height: 100%;
     overflow: hidden;
-    border: 1px solid var(--whiteness);
 }
 
-#instructions.show {
+#struc.show {
     display: flex;
 }
 
-#instructions > div {
-    display: block;
+#struc > div {
+    display: none;
     position: absolute;
     padding: 10px;
     text-align: justify;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    background-color: hsl(var(--hue),0%,20%,0.4);
+    border: 1px solid var(--whiteness);
+}
+
+#struc > div.show {
+    display: block;
+}
+
+#struc #clearButt {
     width: 100%;
-    height: 100%;
+    font-size: 30px;
+    text-align: center;
+    color: var(--darkness);
 }
 
 </style>
@@ -418,27 +429,6 @@ path.propr.fade {
                 <g></g>
                 <g><path/></g>
             </svg>
-            <div id="instructions">
-                <div>
-                    slide <b>left&#8209;and&#8209;right</b>
-                    to resize the middle shape until
-                    you think it represents the
-                    given size in relation to the
-                    <i>other shape</i> - when you
-                    are done, click the middle shape
-                    to submit and generate a new turn
-                    <br><br>
-                    if you click without resizing at all,
-                    that turn will be skipped
-                    <br><br>
-                    double-click to toggle a view of your
-                    stats for all the shapes and proportions
-                    <br><br>
-                    swipe up to display these instructions;
-                    swipe <i>down</i> to hide them now and
-                    begin
-                </div>
-            </div>
         </div>
         <div id="stats">
             <div id="chart">
@@ -457,6 +447,51 @@ path.propr.fade {
               <div id="propr_butt">
                 <svg viewBox="-20 -25 40 50"></svg>
               </div>
+            </div>
+        </div>
+        <div id="struc">
+            <div>
+                slide <b>left&#8209;and&#8209;right</b>
+                to resize the middle shape until
+                you think it represents the
+                given size, in relation to the
+                <i>other shape</i>; when you
+                are done, click the middle shape
+                to submit and generate a new turn
+                <br><br>
+                if you click without resizing at all,
+                that turn will be skipped
+                <br><br>
+                double-click on the scene
+                to toggle a view of your
+                stats for all the different shapes and
+                proportions
+                <br><br>
+                swipe up to display instructions;
+                swipe <i>down</i> to hide them
+            </div>
+            <div>
+                click on the shape to cycle through your
+                stats for different shapes
+                <br><br>
+                double-clicking near the shape will
+                <i>toggle locking</i>
+                so only that shape gets generated
+                in the scene
+                <br><br>
+                this chart is <em>logarithmic</em> in scale
+                <br><br>
+                stats are kept for every attempt, though
+                only the last few samples are displayed
+                <br><br>
+                click on the average-line to toggle a view
+                of the <i>standard deviation</i>, or
+                double click there to ...
+                <br><br>
+                <div id="clearButt">
+                <em>CLEAR ALL STATS</em>
+                </div>
+                
             </div>
         </div>
         <div id="nitro" class="show">
@@ -485,7 +520,7 @@ path.propr.fade {
 // !! DEBUGG !!
 'use strict';
 const log = console.log;
-localStorage.clear();
+//localStorage.clear();
 /////////////////////////////////////////////////}
     
 (() => document.addEventListener('DOMContentLoaded', () => {
@@ -496,6 +531,7 @@ localStorage.clear();
         appName : 'propr-fit',
         guess  : { val: 50, min: 5, max: 300 },
         target : { val: 20, min: 18, max: 80 },
+        locked : { shapes: false, proprs: false },
         stats : [],
         stats_size : 11,
         instructions: true
@@ -536,11 +572,10 @@ localStorage.clear();
     // vars {
 
     const nitroDiv = byID('nitro');
+    const strucDiv = byID('struc');
     const statsDiv = byID('stats');
     const sceneDiv = byID('scene');
     const sceneSVG = sceneDiv.children[0];
-    
-    const strucDiv = byID('instructions');
     
     const targetGroup = sceneSVG.children[0];
     const targetPath = targetGroup.children[0];
@@ -554,7 +589,6 @@ localStorage.clear();
     const proprButt = byID('propr_butt');
     const proprButtSVG = proprButt.children[0];
     
-    
     const chartDiv = byID('chart');
     const chartSVG = chartDiv.children[0];
     const stdLine = chartSVG.children[0];
@@ -562,6 +596,7 @@ localStorage.clear();
     const aveLine = chartSVG.children[2];
     const valLine = chartSVG.children[3];
     const maxLine = chartSVG.children[4];
+    const clearButt = byID('clearButt');
     
     'stdmidavevalmax'.match(/.../g).forEach((v, i) => {
         chartSVG.children[i].classList.add(`${v}Line`);
@@ -575,8 +610,9 @@ localStorage.clear();
     let chartW = 0;
     let chartH = 0;
 
-    let isActualAttempt;
     let dude;
+    let allStats;
+    let isActualAttempt;
     
     //}
 
@@ -611,6 +647,7 @@ localStorage.clear();
     const reqFull = () => {
 
         doc.documentElement.requestFullscreen();
+        lizz(frame, 'swipe', swipeLizzer);
         lizz(doc, 'dblclick', togStats);
         nitroDiv.classList.remove('show');
         setSize();
@@ -646,8 +683,6 @@ localStorage.clear();
  
     const alterTarget = () => {
         
-        targetPath.setAttribute('d', shapes.currItem);
-        
         targetGroup.setAttribute(
             'transform',
             `translate(
@@ -655,6 +690,22 @@ localStorage.clear();
                 ${size.neg * size.y}
             ) rotate(${size.o}) scale(${(prefs.target.val=size.s)})`
         );
+    };
+    
+    const showPropr = () => {
+        [...proprs.sceneObjs, ...proprs.buttonObjs].forEach(v => {
+            v.classList.remove('show');
+            v.classList.remove('fade');
+        });
+        proprs.currSceneObj.classList.add('show');
+        setTimeout(() => proprs.currSceneObj.classList.add('fade'), 500);
+        proprs.currButtObj.classList.add('show');
+    };
+    
+    const showShape = () => {
+        [shapeButtPath, guessPath, targetPath].forEach(v => {
+            v.setAttribute('d', shapes.currItem);
+        });
     };
     
     const drawChart = (v=dude) => {
@@ -668,6 +719,35 @@ localStorage.clear();
         maxLine.setAttribute('d', v.makeMaxLine(p));
         
     };
+    
+    const fillStats = () => {
+        
+        allStats =
+        [...proprs].map((p, i) =>
+        [...shapes].map((s, j) => {
+            if (!prefs.stats[i]) {
+                prefs.stats[i] = [];
+            }
+            if (prefs.stats[i][j]) {
+                return StatsArray.deserialize(prefs.stats[i][j]);
+            }
+            else {
+                const tmp = new StatsArray({
+                    vals: [],
+                    siz: prefs.stats_size,
+                    cnt: 0,
+                    ave: null,
+                    min: Infinity,
+                    max: -Infinity,
+                    std: null,
+                    cov: 0,
+                    M2: 0
+                });
+                prefs.stats[i][j] = tmp.serialize();
+                return tmp;
+            }
+        }));
+    }
     
     const setDude = (a=proprs.currIndex, b=shapes.currIndex) => {
         dude = allStats[a][b];
@@ -781,6 +861,9 @@ localStorage.clear();
         get nextItem() { return this.#updateIndex(1); }
         get randItem() { return this.#updateIndex('rand'); }
         get currIndex() { return this.#arrayIndex; }
+        set currItem(v) {
+            return this[this.#arrayIndex=this.#mod(v)];
+        }
 
     }
 
@@ -973,32 +1056,6 @@ localStorage.clear();
         }
     
     }
-
-    const allStats =
-        [...proprs].map((p, i) =>
-        [...shapes].map((s, j) => {
-        if (!prefs.stats[i]) {
-            prefs.stats[i] = [];
-        }
-        if (prefs.stats[i][j]) {
-            return StatsArray.deserialize(prefs.stats[i][j]);
-        }
-        else {
-            const tmp = new StatsArray({
-                vals: [],
-                siz: prefs.stats_size,
-                cnt: 0,
-                ave: null,
-                min: Infinity,
-                max: -Infinity,
-                std: null,
-                cov: 0,
-                M2: 0
-            });
-            prefs.stats[i][j] = tmp.serialize();
-            return tmp;
-        }
-    }));
     
     //}
 
@@ -1008,6 +1065,7 @@ localStorage.clear();
     lizz(doc, 'dblclick', reqFull, { once: true });
     lizz(doc, 'fullscreenchange', e => {
         if (!doc.fullscreenElement) {
+            lizX(frame, 'swipe', swipeLizzer);
             lizX(doc, 'dblclick', togStats);
             lizz(doc, 'dblclick', reqFull, { once: true });
             nitroDiv.classList.add('show');
@@ -1027,29 +1085,20 @@ localStorage.clear();
         if (isActualAttempt) {
             
             prefs.stats[proprs.currIndex][shapes.currIndex] =
-            dude.push(
-                (prefs.guess.val**2 / prefs.target.val**2)
-            );
+            dude.push(prefs.guess.val**2 / prefs.target.val**2);
            
             isActualAttempt = false;
             
         }
         
         shapes.randItem;
-        guessPath.setAttribute('d', shapes.currItem);
+        showShape();
+        
         alterGuess();
         alterTarget();
-        shapeButtPath.setAttribute('d', shapes.currItem);
         
         proprs.randItem;
-        [...proprs.sceneObjs, ...proprs.buttonObjs].forEach(v => {
-            v.classList.remove('show');
-            v.classList.remove('fade');
-        });
-        [proprs.currSceneObj, proprs.currButtObj].forEach(v => {
-            v.classList.add('show');
-        });
-        setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
+        showPropr();
         
         setDude()
         drawChart();
@@ -1123,9 +1172,7 @@ localStorage.clear();
     lizz(shapeButtSVG, 'click', () => {
         
         shapes.nextItem;
-        [shapeButtPath, guessPath, targetPath].forEach(v => {
-            v.setAttribute('d', shapes.currItem);
-        });
+        showShape();
         
         setDude();
         drawChart();
@@ -1135,9 +1182,15 @@ localStorage.clear();
     });
     
     lizz(shapeButt, 'dblclick', () => {
-        shapes.locked = !shapes.locked;
-        shapes.locked ? shapeButtSVG.append(shapes.lockedObj) :
-                        shapes.lockedObj.remove();
+        if (shapes.locked) {
+            shapes.locked = false;
+            prefs.locked.shapes = false;
+            shapes.lockedObj.remove();
+        } else {
+            shapes.locked = shapes.currIndex;
+            prefs.locked.shapes = shapes.currIndex;
+            shapeButtSVG.append(shapes.lockedObj);
+        }
     });
     
     //}
@@ -1151,13 +1204,7 @@ localStorage.clear();
     lizz(proprButtSVG, 'click', () => {
         
         proprs.nextItem;
-        [...proprs.sceneObjs, ...proprs.buttonObjs].forEach(v => {
-            v.classList.remove('show');
-            v.classList.remove('fade');
-        });
-        proprs.currSceneObj.classList.add('show');
-        setTimeout(()=>proprs.currSceneObj.classList.add('fade'),500);
-        proprs.currButtObj.classList.add('show');
+        showPropr();
         
         setDude();
         drawChart();
@@ -1167,11 +1214,15 @@ localStorage.clear();
     });
     
     lizz(proprButt, 'dblclick', () => {
-        
-        proprs.locked = !proprs.locked;
-        proprs.locked ? proprButtSVG.append(proprs.lockedObj) :
-                        proprs.lockedObj.remove();
-        
+        if (proprs.locked) {
+            proprs.locked = false;
+            prefs.locked.proprs = false;
+            proprs.lockedObj.remove();
+        } else {
+            proprs.locked = proprs.currIndex;
+            prefs.locked.proprs = proprs.currIndex;
+            proprButtSVG.append(proprs.lockedObj);
+        }
     });
     
     //}
@@ -1190,29 +1241,79 @@ localStorage.clear();
         
     //}
     
-    // toggle instructions on scene swipe {
-    
-    if (prefs.instructions) strucDiv.classList.add('show');
-    
-    makeSwiper(scene, 30, 200);
-    lizz(scene, 'swipe', (e, v=e.detail.dir) => {
+    // toggle instructions {
+
+    makeSwiper(frame, 30, 200);
+    kill(strucDiv,'dblclick');
+    const swipeLizzer = (e, v=e.detail.dir) => {
         if (v === 'up') {
             strucDiv.classList.add('show');
+            if (statsDiv.classList.contains('show')) {
+                strucDiv.children[0].classList.remove('show');
+                strucDiv.children[1].classList.add('show');
+            } else {
+                strucDiv.children[0].classList.add('show');
+                strucDiv.children[1].classList.remove('show');
+            }
             prefs.instructions = true;
         } else if (v === 'down') {
             strucDiv.classList.remove('show');
             prefs.instructions = false;
         }
-    });
-    
+    };
 
     //}
     
+    // clear stats on button {
+    
+    lizz(clearButt.children[0], 'dblclick', () => {
+        prefs.stats = [];
+        fillStats();
+        setDude(); // !have to do this!
+        drawChart();
+    });
+        
+    //}
+    
+    // store prefs on unload {
+        
+    lizz(window, 'beforeunload', () => {
+        localStorage.setItem(prefs.appName, JSON.stringify(prefs));
+    });
+    
+    //}
+    
     // on init {
+    
+    fillStats();
 
-    setDude(0, 0);
+    setDude(prefs.locked.proprs||0, prefs.locked.shapes||0);
     scaleGuess(0);
-
+    
+        
+    if (prefs.instructions) {
+        strucDiv.classList.add('show');
+        strucDiv.children[0].classList.add('show');
+    }
+    
+    if (prefs.locked.proprs) {
+        proprs.currItem = prefs.locked.proprs;
+        proprs.locked = prefs.locked.proprs;
+        proprButtSVG.append(proprs.lockedObj);
+        showPropr();
+        
+        prefs.locked.proprs = proprs.currIndex;
+        proprs.locked = proprs.currIndex;
+        proprButtSVG.append(proprs.lockedObj);
+    }
+    
+    if (prefs.locked.shapes) {
+        shapes.currItem = prefs.locked.shapes;
+        shapes.locked = prefs.locked.shapes;
+        shapeButtSVG.append(shapes.lockedObj);
+        showShape();
+    }
+    
     //}
     
 }))();
