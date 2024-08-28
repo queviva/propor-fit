@@ -418,6 +418,11 @@ path.propr.fade {
     color: var(--darkness);
 }
 
+#struc p {
+    margin-top: 0;
+    margin-bottom: 0.7ch;
+}
+
 </style>
 </head>
 
@@ -451,6 +456,7 @@ path.propr.fade {
         </div>
         <div id="struc">
             <div>
+                <p>
                 slide <b>left&#8209;and&#8209;right</b>
                 to resize the middle shape until
                 you think it represents the
@@ -458,45 +464,48 @@ path.propr.fade {
                 <i>other shape</i>; when you
                 are done, click the middle shape
                 to submit and generate a new turn
-                <br><br>
+                </p><p>
                 if you click without resizing at all,
                 that turn will be skipped
-                <br><br>
-                double-click on the scene
+                </p><p>
+                double-click somewhere on the scene
                 to toggle a view of your
                 stats for all the different shapes and
                 proportions
-                <br><br>
-                swipe up to display instructions;
-                swipe <i>down</i> to hide them
+                </p><p>
+                swipe up to display instructions
+                like these; swipe <i>down</i> to hide
+                them and begin
+                </p>
             </div>
             <div>
+                <p>
                 click on the shape to cycle through your
                 stats for different shapes
-                <br><br>
+                </p><p/>
                 double-clicking near the shape will
                 <i>toggle locking</i>
                 so only that shape gets generated
                 in the scene
-                <br><br>
-                this chart is <em>logarithmic</em> in scale
-                <br><br>
+                </p><p>
+                this chart is <b>logarithmic</b> in scale
+                </p><p>
                 stats are kept for every attempt, though
                 only the last few samples are displayed
-                <br><br>
+                </p><p>
                 click on the average-line to toggle a view
                 of the <i>standard deviation</i>, or
-                double click there to ...
-                <br><br>
+                double click here to ...
+                </p>
                 <div id="clearButt">
                 <em>CLEAR ALL STATS</em>
                 </div>
                 
             </div>
         </div>
-        <div id="nitro" data-swipe class="show">
+        <div id="nitro" data-stripe class="show">
             <svg viewBox="0 0 150 200">
-                <use href="abe.svg#ikon"/>
+                <use id="abe" href="abe.svg#ikon"/>
             </svg>
             <div class="doublelick">
                 <div>
@@ -505,7 +514,9 @@ path.propr.fade {
                 </span>
                 <br>
                 <span style="color:var(--blackness)">
-                &middot; to jump right in &middot;
+                &middot;
+                <span id="quote">to jump right in</span>
+                &middot;
                 </span>
                 </div>
             </div>
@@ -759,40 +770,35 @@ const log = console.log;
     // a swipe event maker {
     
     function makeSwiper(
-        element, swipeThreshold=100, timeThreshold=200
+        element, sHold=30, tHold=300
     ) {
         
-        swipeThreshold *= window.devicePixelRatio || 1;
+        sHold = (sHold*(window.devicePixelRatio||1))**2;
 
-        let touchX, touchY, touchT;
+        const T = {};
     
         element.addEventListener('touchstart', function(e) {
-            touchX = e.touches[0].pageX;
-            touchY = e.touches[0].pageY;
-            touchT = e.timeStamp;
+            T.x = e.touches[0].pageX;
+            T.y = e.touches[0].pageY;
+            T.t = e.timeStamp;
         });
     
         element.addEventListener('touchend', function(e) {
 
-            const deltaX = e.changedTouches[0].pageX - touchX;
-            const deltaY = e.changedTouches[0].pageY - touchY;
-            const deltaT = e.timeStamp - touchT;
+            if (e.timeStamp - T.t > tHold) return;
             
-            const rtlf =
-                Math.abs(deltaX) > swipeThreshold
-                && deltaY < swipeThreshold ?
-                (deltaX > 0 ? 'right' : 'left') : null;
-                
-            const updn =
-                Math.abs(deltaY) > swipeThreshold
-                && deltaX < swipeThreshold ?
-                (deltaY > 0 ? 'down' : 'up') : null;
+            T.x -= e.changedTouches[0].pageX;
+            T.y -= e.changedTouches[0].pageY;
+            
+            const dir =
+                T.x**2 > sHold && T.y**2 < 30**2 ?
+                (T.x < 0 ? 'right' : 'left') :
+                T.y**2 > sHold && T.x**2 < 30**2 ?
+                (T.y < 0 ? 'down' : 'up') : null;
     
-            if (deltaT < timeThreshold && (updn || rtlf)) {
-                element.dispatchEvent(new CustomEvent('swipe', {
-                    detail: { dir: updn || rtlf }
-                }));
-            }
+            if (dir) element.dispatchEvent(new CustomEvent('swipe', {
+                    detail: dir
+            }));
         });
     }
 
@@ -1244,9 +1250,9 @@ const log = console.log;
     
     // toggle instructions {
 
-    makeSwiper(frame, 30, 200);
     kill(strucDiv,'dblclick');
-    const swipeLizzer = (e, v=e.detail.dir) => {
+    makeSwiper(frame);
+    const swipeLizzer = (e, v=e.detail) => {
         if (v === 'up') {
             strucDiv.classList.add('show');
             if (statsDiv.classList.contains('show')) {
@@ -1261,7 +1267,7 @@ const log = console.log;
             strucDiv.classList.remove('show');
             prefs.instructions = false;
         }
-    };
+    }; // added in full-screen request
 
     //}
     
